@@ -80,7 +80,7 @@ data class Logger(
                 }
             }
             try {
-                var current = getLogs()
+                var current = logFile.readText()
                 if(current.length > MAX_FILE_SIZE){
                     current = current.removeRange(0, current.length - MAX_FILE_SIZE)
                 }
