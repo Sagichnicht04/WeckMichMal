@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter
 data class Logger(
     val context: Context?
 ){
+    val MAX_FILE_SIZE = 10000
     enum class Level(
     ) { INFO(), WARNING(), SEVERE() }
 
@@ -79,8 +80,12 @@ data class Logger(
                 }
             }
             try {
-                logFile.appendText(modifiedText)
-                logFile.appendText(System.lineSeparator())
+                var current = getLogs()
+                if(current.length > MAX_FILE_SIZE){
+                    current = current.removeRange(0, current.length - MAX_FILE_SIZE)
+                }
+                current += modifiedText + System.lineSeparator()
+                logFile.writeText(current)
             }
             catch (e: IOException) {
                 throw PersistenceException.WriteLogException(e)
