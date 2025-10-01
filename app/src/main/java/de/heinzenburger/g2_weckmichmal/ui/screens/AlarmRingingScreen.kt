@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -98,7 +99,7 @@ class AlarmRingingScreen : ComponentActivity(){
             }
 
             // Retrieve configuration and event from intent
-            val configurationWithEvent =
+            var configurationWithEvent =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(
                         "configurationWithEvent",
@@ -196,6 +197,7 @@ class AlarmRingingScreen : ComponentActivity(){
                             detailedViewForRoute.value = it
                         }
                               },
+                    shape = RectangleShape,
                     contentPadding = PaddingValues(),
                     colors = ButtonDefaults.buttonColors(Color.Transparent)
                 ) {
@@ -208,7 +210,8 @@ class AlarmRingingScreen : ComponentActivity(){
                                     MaterialTheme.colorScheme.onBackground
                                 } else {
                                     MaterialTheme.colorScheme.onPrimary
-                                },RoundedCornerShape(48.dp)
+                                },
+                                RoundedCornerShape(20)
                             )
                             .fillMaxWidth()
                             .padding(10.dp),
