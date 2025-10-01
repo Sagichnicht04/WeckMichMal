@@ -208,7 +208,7 @@ class AlarmRingingScreen : ComponentActivity(){
                                     MaterialTheme.colorScheme.onBackground
                                 } else {
                                     MaterialTheme.colorScheme.onPrimary
-                                }, RoundedCornerShape(20)
+                                },RoundedCornerShape(48.dp)
                             )
                             .fillMaxWidth()
                             .padding(10.dp),
