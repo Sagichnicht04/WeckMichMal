@@ -187,7 +187,7 @@ class InformationScreen : ComponentActivity() {
 
     // Opens the mensa menu in the browser
     fun openMensaInBrowser(){
-        var url = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?view=ok&c=erzberger&STYLE=popup_plain"
+        val url = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?view=ok&c=erzberger&STYLE=popup_plain"
         val intent = Intent(Intent.ACTION_VIEW, url.toUri())
         intent.flags =
             Intent.FLAG_ACTIVITY_NEW_TASK
