@@ -148,7 +148,13 @@ class InformationScreen : ComponentActivity() {
                             modifier = Modifier.padding(16.dp).fillMaxWidth(0.65f),
                         )
                         OurText(
-                            text = String.format("%.2f €", meal.price),
+                            text =
+                                if(meal.price > 0){
+                                    String.format("%.2f €", meal.price)
+                                }
+                                else{
+                                    ""
+                                },
                             textAlign = TextAlign.Right,
                             modifier = Modifier.padding(top=16.dp, bottom = 16.dp, end = 16.dp).fillMaxWidth()
                         )
