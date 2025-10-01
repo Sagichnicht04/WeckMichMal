@@ -187,13 +187,13 @@ class MockupCore : CoreSpecification {
 
     override fun updateConfigurationIchHabGeringt(
         date: LocalDate,
-        configuration: Long
+        uid: Long
     ) {
 
     }
 
     override fun getAllConfigurationAndEvent(): List<ConfigurationWithEvent>? {
-        var result = mutableListOf<ConfigurationWithEvent>()
+        val result = mutableListOf<ConfigurationWithEvent>()
         mockupConfigurations.forEach {
             val configurationEntity = it
             var event : Event? = null

@@ -99,7 +99,7 @@ class AlarmRingingScreen : ComponentActivity(){
             }
 
             // Retrieve configuration and event from intent
-            var configurationWithEvent =
+            val configurationWithEvent =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(
                         "configurationWithEvent",
