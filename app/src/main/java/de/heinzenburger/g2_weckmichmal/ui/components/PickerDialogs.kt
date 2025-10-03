@@ -75,7 +75,7 @@ class PickerDialogs {
             onDismiss: () -> Unit,
             default: Int
         ) {
-            var selectedNumber = remember { mutableIntStateOf(default) }
+            val selectedNumber = remember { mutableIntStateOf(default) }
             Dialog(onDismissRequest = { onDismiss() }) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
@@ -164,9 +164,9 @@ class PickerDialogs {
             core: CoreSpecification
         ) {
             Dialog(onDismissRequest = { onDismiss() }) {
-                var station = remember { mutableStateOf("") }
-                var stationPrediction = remember { mutableStateOf("") }
-                var stationPredictions = remember { mutableStateOf(listOf("--")) }
+                val station = remember { mutableStateOf("") }
+                val stationPrediction = remember { mutableStateOf("") }
+                val stationPredictions = remember { mutableStateOf(listOf("--")) }
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                     modifier = Modifier
@@ -323,12 +323,12 @@ class PickerDialogs {
             listOfCourses: List<String>,
             listOfExcludedCourses: List<String>,
         ) {
-            var excludeCourses = remember { mutableStateListOf<String>()}
+            val excludeCourses = remember { mutableStateListOf<String>()}
             listOfExcludedCourses.forEach {
                 excludeCourses.add(it)
             }
-            var excludeCourse = remember { mutableStateOf("") }
-            var proposeCourses = remember { mutableStateOf(listOfCourses) }
+            val excludeCourse = remember { mutableStateOf("") }
+            val proposeCourses = remember { mutableStateOf(listOfCourses) }
 
             fun excludeCourse(it: String){
                 var isCourseAlreadyExcluded = false
@@ -398,7 +398,7 @@ class PickerDialogs {
                             value = excludeCourse.value,
                             onValueChange = {
                                 excludeCourse.value = it
-                                var newProposeCourseList = mutableListOf<String>()
+                                val newProposeCourseList = mutableListOf<String>()
                                 listOfCourses.forEach {
                                     if(it.lowercase().contains(excludeCourse.value.lowercase()) == true){
                                         newProposeCourseList.add(it)
@@ -455,10 +455,10 @@ class PickerDialogs {
             registerForActivityResult: ActivityResultLauncher<String>
         ) {
             // State for granted permissions and dialog dismissal
-            var permissions = remember { mutableStateOf(core.getGrantedPermissions()) }
-            var dismiss = remember { mutableStateOf(false) }
+            val permissions = remember { mutableStateOf(core.getGrantedPermissions()) }
+            val dismiss = remember { mutableStateOf(false) }
             val ignorePermission = remember { mutableStateListOf("") }
-            var context = LocalContext.current
+            val context = LocalContext.current
             Dialog(
                 onDismissRequest = {
                     dismiss.value = true
