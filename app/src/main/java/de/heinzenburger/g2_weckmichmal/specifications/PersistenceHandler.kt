@@ -373,11 +373,38 @@ data class SettingsEntity(
  */
 data class GameEntity(
     var coins: Int = 0,
-    var lastConfigurationChange: LocalDate = LocalDate.MIN,
-    var goodWakeTimeStart: LocalTime = LocalTime.of(7,0),
-    var goodWakeTimeEnd: LocalTime = LocalTime.of(8, 0),
+    private var lastConfigurationChange: String = LocalDate.of(1990,1,1)
+        .format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+    private var goodWakeTimeStart: String = LocalTime.of(7,0).format(
+        DateTimeFormatter.ofPattern(
+            "HH:mm"
+        )
+    ),
+    private var goodWakeTimeEnd: String = LocalTime.of(8, 0).format(
+            DateTimeFormatter.ofPattern(
+                "HH:mm"
+            )
+        ),
     var shoppingList: ShoppingEntity = ShoppingEntity()
 ){
+    fun setLastConfigurationChange(lastConfigurationChange: LocalDate){
+        this.lastConfigurationChange = lastConfigurationChange.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    }
+    fun getLastConfigurationChange(): LocalDate{
+        return LocalDate.parse(this.lastConfigurationChange, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    }
+    fun setGoodWakeTimeStart(goodWakeTimeStart: LocalTime){
+        this.goodWakeTimeStart = goodWakeTimeStart.format(DateTimeFormatter.ofPattern("HH:mm"))
+    }
+    fun getGoodWakeTimeStart(): LocalTime{
+        return LocalTime.parse(this.goodWakeTimeStart, DateTimeFormatter.ofPattern("HH:mm"))
+    }
+    fun setGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime){
+        this.goodWakeTimeEnd = goodWakeTimeEnd.format(DateTimeFormatter.ofPattern("HH:mm"))
+    }
+    fun getGoodWakeTimeEnd(): LocalTime{
+        return LocalTime.parse(this.goodWakeTimeEnd, DateTimeFormatter.ofPattern("HH:mm"))
+    }
     data class ShoppingEntity(
         var dummy: Boolean = false
     )

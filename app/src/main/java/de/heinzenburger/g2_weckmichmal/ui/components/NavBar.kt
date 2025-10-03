@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.AccessAlarm
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
 import de.heinzenburger.g2_weckmichmal.ui.screens.AlarmClockEditScreen
 import de.heinzenburger.g2_weckmichmal.ui.screens.AlarmClockOverviewScreen
+import de.heinzenburger.g2_weckmichmal.ui.screens.GameScreen
 import de.heinzenburger.g2_weckmichmal.ui.screens.InformationScreen
 import de.heinzenburger.g2_weckmichmal.ui.screens.SettingsScreen
 
@@ -67,6 +69,20 @@ class NavBar : ComponentActivity() {
                                     modifier.size(iconSize),
                                     tint = if(caller == AlarmClockOverviewScreen::class || caller == AlarmClockEditScreen::class){iconSelectedColor}else{iconColor},
                                     )
+                            }
+                            if(core.getIsGameMode() == true){
+                                IconButton(onClick = {
+                                    val intent = Intent(context, GameScreen::class.java)
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                    context.startActivity(intent)
+                                }, modifier.size(90.dp)) {
+                                    Icon(
+                                        Icons.Filled.SportsEsports,
+                                        contentDescription = "Game Icon",
+                                        modifier.size(iconSize),
+                                        tint = if(caller == GameScreen::class){iconSelectedColor}else{iconColor},
+                                    )
+                                }
                             }
                             IconButton(onClick = {
                                 val intent = Intent(context, InformationScreen::class.java)

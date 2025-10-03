@@ -37,7 +37,7 @@ class GameOperations(
     fun getLastConfigurationChanged(): LocalDate{
         val gamePersistency = GamePersistency(core.context)
         core.log(Logger.Level.INFO, "Reading lastConfigurationChange")
-        return gamePersistency.getGameEntity().lastConfigurationChange
+        return gamePersistency.getGameEntity().getLastConfigurationChange()
     }
 
     fun updateLastConfiguratoinChanged(lastConfigurationChanged: LocalDate){
@@ -49,7 +49,7 @@ class GameOperations(
     fun getGoodWakeTimeStart(): LocalTime{
         val gamePersistency = GamePersistency(core.context)
         core.log(Logger.Level.INFO, "Reading goodWakeTimeStart")
-        return gamePersistency.getGameEntity().goodWakeTimeStart
+        return gamePersistency.getGameEntity().getGoodWakeTimeStart()
     }
 
     fun updateGoodWakeTimeStart(goodWakeTimeStart: LocalTime){
@@ -61,12 +61,12 @@ class GameOperations(
     fun getGoodWakeTimeEnd(): LocalTime{
         val gamePersistency = GamePersistency(core.context)
         core.log(Logger.Level.INFO, "Reading goodWakeTimeEnd")
-        return gamePersistency.getGameEntity().goodWakeTimeEnd
+        return gamePersistency.getGameEntity().getGoodWakeTimeEnd()
     }
 
     fun updateGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime){
         val gamePersistency = GamePersistency(core.context)
-        gamePersistency.updateGoodWakeTimeStart(goodWakeTimeEnd)
+        gamePersistency.updateGoodWakeTimeEnd(goodWakeTimeEnd)
         core.log(Logger.Level.INFO, "Updating goodWakeTimeEnd: $goodWakeTimeEnd")
     }
 

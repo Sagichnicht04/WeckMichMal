@@ -31,6 +31,7 @@ import de.heinzenburger.g2_weckmichmal.core.Core
 import de.heinzenburger.g2_weckmichmal.core.ExceptionHandler
 import de.heinzenburger.g2_weckmichmal.core.MockupCore
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
+import de.heinzenburger.g2_weckmichmal.specifications.GameEntity
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.LoadingScreen
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurText
 import de.heinzenburger.g2_weckmichmal.ui.components.NavBar
@@ -38,15 +39,20 @@ import de.heinzenburger.g2_weckmichmal.ui.components.PickerDialogs.Companion.Exc
 import de.heinzenburger.g2_weckmichmal.ui.components.PickerDialogs.Companion.ExplainGameModeDialog
 import de.heinzenburger.g2_weckmichmal.ui.components.SaveURL
 import de.heinzenburger.g2_weckmichmal.ui.theme.G2_WeckMichMalTheme
+import java.time.LocalDate
+import java.time.LocalTime
 import kotlin.concurrent.thread
 
 // Main Activity for the Settings screen
 class SettingsScreen : ComponentActivity() {
-    var listOfCourses = mutableStateListOf<String>()
-    var listOfExcludedCourses = mutableStateListOf<String>()
+    private var listOfCourses = mutableStateListOf<String>()
+    private var listOfExcludedCourses = mutableStateListOf<String>()
+    private var isGameMode: Boolean? = null
 
-    var isGameMode: Boolean? = null
-    var isGameModeLoaded = false
+    private var currentGoodWakeTimeStart: LocalTime = GameEntity().getGoodWakeTimeStart()
+    private var currentGoodWakeTimeEnd: LocalTime = GameEntity().getGoodWakeTimeEnd()
+    private var currentLastConfigurationChanged: LocalDate = GameEntity().getLastConfigurationChange()
+    private var isGameModeLoaded = false
     private var openLoadingScreen = mutableStateOf(false)
     private var openGameModeScreen = mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +67,9 @@ class SettingsScreen : ComponentActivity() {
             // Load courses and excluded courses in a background thread
             thread {
                 isGameMode = core.getIsGameMode()
+                currentGoodWakeTimeStart = core.getGoodWakeTimeStart() ?: currentGoodWakeTimeStart
+                currentGoodWakeTimeEnd = core.getGoodWakeTimeEnd() ?: currentGoodWakeTimeEnd
+                currentLastConfigurationChanged = core.getLastConfigurationChanged() ?: currentLastConfigurationChanged
                 isGameModeLoaded = true
                 core.getListOfNameOfCourses()?.forEach { listOfCourses.add(it) }
                 core.getListOfExcludedCourses()?.forEach { listOfExcludedCourses.add(it) }
@@ -124,12 +133,41 @@ class SettingsScreen : ComponentActivity() {
             openGameModeScreen.value ->{
                 ExplainGameModeDialog(
                     currentMode = isGameMode == true,
+                    currentGoodWakeTimeStart = currentGoodWakeTimeStart,
+                    currentGoodWakeTimeEnd = currentGoodWakeTimeEnd,
+                    currentLastConfigurationChanged = currentLastConfigurationChanged,
                     onConfirm = {
-                        newIsGameMode -> core.updateIsGameMode(newIsGameMode)
+                        newIsGameMode, newGoodWakeTimeStart, newGoodWakeTimeEnd ->
+                        thread{
+                            core.updateIsGameMode(newIsGameMode)
+                            if(newGoodWakeTimeStart!=currentGoodWakeTimeStart || newGoodWakeTimeEnd!=currentGoodWakeTimeEnd){
+                                core.updateGoodWakeTimeStart(newGoodWakeTimeStart)
+                                core.updateGoodWakeTimeEnd(newGoodWakeTimeEnd)
+                                core.updateLastConfiguratoinChanged(LocalDate.now())
+                            }
+                            val intent = Intent(context, this::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                            startActivity(intent)
+                            finish()
+                        }
                         openGameModeScreen.value = false
                         isGameMode = newIsGameMode
                     },
-                    onDismiss = { openGameModeScreen.value = false }
+                    onDismiss = {
+                        newGoodWakeTimeStart,newGoodWakeTimeEnd ->
+                        openGameModeScreen.value = false
+                        thread{
+                            if(newGoodWakeTimeStart!=currentGoodWakeTimeStart || newGoodWakeTimeEnd!=currentGoodWakeTimeEnd){
+                                core.updateGoodWakeTimeStart(newGoodWakeTimeStart)
+                                core.updateGoodWakeTimeEnd(newGoodWakeTimeEnd)
+                                core.updateLastConfiguratoinChanged(LocalDate.now())
+                            }
+                            val intent = Intent(context, this::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                            startActivity(intent)
+                            finish()
+                        }
+                    }
                 )
             }
         }

@@ -60,7 +60,7 @@ data class GamePersistency (
     override fun updateLastConfigurationChange(date: LocalDate) {
         try {
             val gameEntity = getGameEntity()
-            gameEntity.lastConfigurationChange = date
+            gameEntity.setLastConfigurationChange(date)
             saveOrUpdateGamePersistency(gameEntity)
         }
         catch (e: PersistenceException){
@@ -71,7 +71,7 @@ data class GamePersistency (
     override fun updateGoodWakeTimeStart(time: LocalTime) {
         try {
             val gameEntity = getGameEntity()
-            gameEntity.goodWakeTimeStart = time
+            gameEntity.setGoodWakeTimeStart(time)
             saveOrUpdateGamePersistency(gameEntity)
         }
         catch (e: PersistenceException){
@@ -82,7 +82,7 @@ data class GamePersistency (
     override fun updateGoodWakeTimeEnd(time: LocalTime) {
         try {
             val gameEntity = getGameEntity()
-            gameEntity.goodWakeTimeEnd = time
+            gameEntity.setGoodWakeTimeEnd(time)
             saveOrUpdateGamePersistency(gameEntity)
         }
         catch (e: PersistenceException){
