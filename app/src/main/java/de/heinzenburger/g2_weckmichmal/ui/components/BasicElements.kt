@@ -98,19 +98,24 @@ class BasicElements {
                 textAlign = textAlign
             )
         }
-        // Numeric input field that only allows integer values
+        // Numeric input field that only allows integer values and null
         @Composable
-        fun NumberField(text: MutableState<Int>, modifier: Modifier) {
-            fun extractIntFromString(input: String): Int {
+        fun NumberField(text: MutableState<Int?>, modifier: Modifier) {
+            fun extractIntFromString(input: String): Int? {
                 val digits = input.filter { it.isDigit() }
-                return if (digits.isNotEmpty() && input.length < 4) digits.toInt() else 0
+                return if (digits.isNotEmpty() && input.length < 4) digits.toInt() else null
             }
 
             val change : (String) -> Unit = { it ->
                 text.value = extractIntFromString(it)
             }
             TextField(
-                value = text.value.toString(),
+                value = if(text.value == null){
+                            ""
+                        }
+                        else{
+                            text.value.toString()
+                        },
                 modifier = modifier,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 onValueChange = change

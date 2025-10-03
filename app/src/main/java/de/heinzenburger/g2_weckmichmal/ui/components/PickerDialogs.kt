@@ -40,6 +40,7 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -73,9 +74,9 @@ class PickerDialogs {
         fun MinutePickerDialog(
             onConfirm: (Int) -> Unit,
             onDismiss: () -> Unit,
-            default: Int
+            default: Int?
         ) {
-            val selectedNumber = remember { mutableIntStateOf(default) }
+            val selectedNumber = remember { mutableStateOf(default) }
             Dialog(onDismissRequest = { onDismiss() }) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
@@ -108,7 +109,14 @@ class PickerDialogs {
                             )
                             {
                                 IconButton(
-                                    onClick = {selectedNumber.intValue++},
+                                    onClick = {
+                                                if(selectedNumber.value == null){
+                                                    selectedNumber.value = 1
+                                                }
+                                                else{
+                                                    selectedNumber.value = (selectedNumber.value as Int)+1
+                                                }
+                                              },
                                     modifier = Modifier.fillMaxHeight(0.1f)
                                 ) {
                                     Icon(Icons.Filled.ArrowDropUp,
@@ -118,7 +126,14 @@ class PickerDialogs {
                                     )
                                 }
                                 IconButton(
-                                    onClick = {selectedNumber.intValue--},
+                                    onClick = {
+                                        if(selectedNumber.value == null){
+                                            selectedNumber.value = -1
+                                        }
+                                        else{
+                                            selectedNumber.value = (selectedNumber.value as Int)-1
+                                        }
+                                    },
                                     modifier = Modifier.fillMaxHeight(0.12f)
                                 )
                                 {
@@ -144,7 +159,7 @@ class PickerDialogs {
                             }
                             TextButton(
                                 onClick = {
-                                    onConfirm(selectedNumber.intValue)
+                                    onConfirm(selectedNumber.value ?: 0)
                                           },
                                 modifier = Modifier.padding(8.dp),
                             ) {
@@ -603,10 +618,12 @@ class PickerDialogs {
 @Composable
 fun SettingsScreenPreview() {
     G2_WeckMichMalTheme {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            WelcomeScreen().Greeting(modifier = Modifier, core = MockupCore())
-        }
+        PickerDialogs.MinutePickerDialog(
+            { minutes: Int ->
+            },
+            {
+            },
+            default = 0,
+        )
     }
 }
