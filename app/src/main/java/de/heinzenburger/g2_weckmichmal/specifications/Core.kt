@@ -4,6 +4,7 @@ import de.heinzenburger.g2_weckmichmal.persistence.Logger
 import de.heinzenburger.g2_weckmichmal.specifications.SettingsEntity.DefaultAlarmValues
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 /**
  * Interface defining the core
@@ -160,4 +161,14 @@ interface CoreSpecification {
     fun getLoggedNextAlarm() : String
 
     fun logNextAlarm(date: LocalDateTime, type: String)
+    fun getCoins(): Int?
+    fun updateCoins(coins: Int)
+    fun getLastConfigurationChanged(): LocalDate?
+    fun updateLastConfiguratoinChanged(lastConfigurationChanged: LocalDate)
+    fun getGoodWakeTimeStart(): LocalTime?
+    fun updateGoodWakeTimeStart(goodWakeTimeStart: LocalTime)
+    fun getGoodWakeTimeEnd(): LocalTime?
+    fun updateGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime)
+    fun getShoppingList(): GameEntity.ShoppingEntity?
+    fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity)
 }

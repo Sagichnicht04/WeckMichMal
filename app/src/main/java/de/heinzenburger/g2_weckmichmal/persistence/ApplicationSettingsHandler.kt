@@ -15,7 +15,7 @@ data class ApplicationSettingsHandler (
 
     override fun saveOrUpdateApplicationSettings(settings: SettingsEntity) {
         try {
-            var json = gson.toJson(settings)
+            val json = gson.toJson(settings)
             //context.filesDir is the apps personal data folder
             logger.log(Logger.Level.SEVERE, json.toString())
             File(context.filesDir, "settings.json").writeText(json.toString())

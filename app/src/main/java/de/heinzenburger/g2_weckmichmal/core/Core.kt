@@ -10,10 +10,13 @@ import de.heinzenburger.g2_weckmichmal.specifications.Configuration
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
 import de.heinzenburger.g2_weckmichmal.specifications.PersistenceException
 import de.heinzenburger.g2_weckmichmal.api.courses.deriveValidCourseURL
+import de.heinzenburger.g2_weckmichmal.persistence.GamePersistency
+import de.heinzenburger.g2_weckmichmal.specifications.GameEntity
 import de.heinzenburger.g2_weckmichmal.specifications.MensaMeal
 import de.heinzenburger.g2_weckmichmal.specifications.SettingsEntity.DefaultAlarmValues
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 //For description of specific method, see I_Core in specifications
 data class Core(
@@ -121,17 +124,6 @@ data class Core(
     }
 
     /**Settings**/
-    override fun getIsGameMode():Boolean?{
-        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving mode from database. Try reinstalling the app."){
-            gameOperations.getIsGameMode()
-        }
-    }
-
-    override fun updateIsGameMode(isGameMode : Boolean){
-        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating mode. Try reinstalling the app."){
-            gameOperations.updateIsGameMode(isGameMode)
-        }
-    }
     override fun saveRaplaURL(url : String){
         exceptionHandler.runWithUnexpectedExceptionHandler("Error saving URL to database. Try reinstalling the app."){
             persistenceOperations.saveRaplaURL(url)
@@ -171,6 +163,67 @@ data class Core(
     override fun updateDefaultAlarmValues(defaultAlarmValues: DefaultAlarmValues) {
         exceptionHandler.runWithUnexpectedExceptionHandler("Could not update default alarm values"){
             persistenceOperations.updateDefaultAlarmValues(defaultAlarmValues)
+        }
+    }
+    /******************** Game ********************/
+    override fun getIsGameMode():Boolean?{
+        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving mode from database. Try reinstalling the app."){
+            gameOperations.getIsGameMode()
+        }
+    }
+    override fun updateIsGameMode(isGameMode : Boolean){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating mode. Try reinstalling the app."){
+            gameOperations.updateIsGameMode(isGameMode)
+        }
+    }
+    override fun getCoins():Int?{
+        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving coins from database"){
+            gameOperations.getCoins()
+        }
+    }
+    override fun updateCoins(coins: Int){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating coins."){
+            gameOperations.updateCoins(coins)
+        }
+    }
+    override fun getLastConfigurationChanged(): LocalDate?{
+        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving last configuration changed from database"){
+            gameOperations.getLastConfigurationChanged()
+        }
+    }
+    override fun updateLastConfiguratoinChanged(lastConfigurationChanged: LocalDate){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating last configuration changed."){
+            gameOperations.updateLastConfiguratoinChanged(lastConfigurationChanged)
+        }
+    }
+    override fun getGoodWakeTimeStart(): LocalTime?{
+        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving good wake time start from database"){
+            gameOperations.getGoodWakeTimeStart()
+        }
+    }
+    override fun updateGoodWakeTimeStart(goodWakeTimeStart: LocalTime){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating good wake time start."){
+            gameOperations.updateGoodWakeTimeStart(goodWakeTimeStart)
+        }
+    }
+    override fun getGoodWakeTimeEnd(): LocalTime?{
+        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving good wake time end from database"){
+            gameOperations.getGoodWakeTimeEnd()
+        }
+    }
+    override fun updateGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating goodWakeTimeEnd."){
+            gameOperations.updateGoodWakeTimeEnd(goodWakeTimeEnd)
+        }
+    }
+    override fun getShoppingList(): GameEntity.ShoppingEntity?{
+        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving shopping list from database"){
+            gameOperations.getShoppingList()
+        }
+    }
+    override fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating shopping list."){
+            gameOperations.updateShoppingList(shoppingEntity)
         }
     }
 

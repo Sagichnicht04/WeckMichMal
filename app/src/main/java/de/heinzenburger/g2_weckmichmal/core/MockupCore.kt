@@ -6,6 +6,7 @@ import de.heinzenburger.g2_weckmichmal.specifications.Configuration
 import de.heinzenburger.g2_weckmichmal.specifications.Course
 import de.heinzenburger.g2_weckmichmal.specifications.Event
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
+import de.heinzenburger.g2_weckmichmal.specifications.GameEntity
 import de.heinzenburger.g2_weckmichmal.specifications.MealType
 import de.heinzenburger.g2_weckmichmal.specifications.MensaMeal
 import de.heinzenburger.g2_weckmichmal.specifications.Route
@@ -260,5 +261,40 @@ class MockupCore : CoreSpecification {
     }
 
     override fun logNextAlarm(date: LocalDateTime, type: String) {
+    }
+
+    override fun getCoins(): Int? {
+        return null
+    }
+
+    override fun updateCoins(coins: Int) {
+    }
+
+    override fun getLastConfigurationChanged(): LocalDate? {
+        return null
+    }
+
+    override fun updateLastConfiguratoinChanged(lastConfigurationChanged: LocalDate) {
+    }
+
+    override fun getGoodWakeTimeStart(): LocalTime? {
+        return null
+    }
+
+    override fun updateGoodWakeTimeStart(goodWakeTimeStart: LocalTime) {
+    }
+
+    override fun getGoodWakeTimeEnd(): LocalTime? {
+        return null
+    }
+
+    override fun updateGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime) {
+    }
+
+    override fun getShoppingList(): GameEntity.ShoppingEntity? {
+        return null
+    }
+
+    override fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity) {
     }
 }
