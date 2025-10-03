@@ -201,14 +201,18 @@ class PickerDialogs {
                             onValueChange = {
                                 station.value = it.replace("\n","")
                                 thread{
-                                    if(station.value.length > 2){
-                                        try {
-                                            stationPredictions.value = core.deriveStationName(it)!!
-                                        }
-                                        catch (e: Exception){
-                                            core.log(Logger.Level.SEVERE, e.message.toString())
-                                            core.log(Logger.Level.SEVERE, e.stackTraceToString())
-                                            core.showToast("Da hat etwas nicht geklappt")
+                                    val currentStation = station.value
+                                    Thread.sleep(500)
+                                    if(currentStation == station.value){
+                                        if(station.value.length > 2){
+                                            try {
+                                                stationPredictions.value = core.deriveStationName(it)!!
+                                            }
+                                            catch (e: Exception){
+                                                core.log(Logger.Level.SEVERE, e.message.toString())
+                                                core.log(Logger.Level.SEVERE, e.stackTraceToString())
+                                                core.showToast("Da hat etwas nicht geklappt")
+                                            }
                                         }
                                     }
                                 } },
