@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 data class Logger(
     val context: Context?
 ){
-    val MAX_FILE_SIZE = 10000
+    val MAX_FILE_SIZE = 500000
     enum class Level(
     ) { INFO(), WARNING(), SEVERE() }
 
