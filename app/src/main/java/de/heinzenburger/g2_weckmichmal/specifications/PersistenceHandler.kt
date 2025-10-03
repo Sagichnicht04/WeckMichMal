@@ -134,6 +134,26 @@ interface InterfaceGamePersistency{
      */
     @Throws(PersistenceException.UpdateGameException::class)
     fun updateCoins(coins: Int)
+    /**
+     * Update the last time that the wake up window has been modified
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateLastConfigurationChange(date: LocalDate)
+    /**
+     * Update the list of bought benefits
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity)
+    /**
+     * Update the start of the wake up window
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateGoodWakeTimeEnd(time: LocalTime)
+    /**
+     * Update the end of the wake up window
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateGoodWakeTimeStart(time: LocalTime)
 }
 interface InterfaceApplicationSettings {
     /**
@@ -352,8 +372,16 @@ data class SettingsEntity(
  * All persistent information about the game
  */
 data class GameEntity(
-    var coins: Int = 0
-)
+    var coins: Int = 0,
+    var lastConfigurationChange: LocalDate = LocalDate.MIN,
+    var goodWakeTimeStart: LocalTime = LocalTime.of(7,0),
+    var goodWakeTimeEnd: LocalTime = LocalTime.of(8, 0),
+    var shoppingList: ShoppingEntity = ShoppingEntity()
+){
+    data class ShoppingEntity(
+        var dummy: Boolean = false
+    )
+}
 
 sealed class PersistenceException(message: String?, cause: Exception?) :
     Exception(message, cause) {

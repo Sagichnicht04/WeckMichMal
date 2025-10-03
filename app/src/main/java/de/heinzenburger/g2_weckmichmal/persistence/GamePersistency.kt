@@ -3,11 +3,12 @@ package de.heinzenburger.g2_weckmichmal.persistence
 import android.content.Context
 import com.google.gson.Gson
 import de.heinzenburger.g2_weckmichmal.specifications.GameEntity
-import de.heinzenburger.g2_weckmichmal.specifications.InterfaceApplicationSettings
+import de.heinzenburger.g2_weckmichmal.specifications.GameEntity.ShoppingEntity
 import de.heinzenburger.g2_weckmichmal.specifications.InterfaceGamePersistency
 import de.heinzenburger.g2_weckmichmal.specifications.PersistenceException
-import de.heinzenburger.g2_weckmichmal.specifications.SettingsEntity
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalTime
 
 data class GamePersistency (
     val context: Context
@@ -17,7 +18,7 @@ data class GamePersistency (
 
     override fun saveOrUpdateGamePersistency(gameEntity: GameEntity) {
         try {
-            var json = gson.toJson(gameEntity)
+            val json = gson.toJson(gameEntity)
             //context.filesDir is the apps personal data folder
             logger.log(Logger.Level.SEVERE, json.toString())
             File(context.filesDir, "game.json").writeText(json.toString())
@@ -48,6 +49,51 @@ data class GamePersistency (
         try {
             val gameEntity = getGameEntity()
             gameEntity.coins = coins
+            saveOrUpdateGamePersistency(gameEntity)
+        }
+        catch (e: PersistenceException){
+            throw PersistenceException.UpdateGameException(e)
+        }
+    }
+
+
+    override fun updateLastConfigurationChange(date: LocalDate) {
+        try {
+            val gameEntity = getGameEntity()
+            gameEntity.lastConfigurationChange = date
+            saveOrUpdateGamePersistency(gameEntity)
+        }
+        catch (e: PersistenceException){
+            throw PersistenceException.UpdateGameException(e)
+        }
+    }
+
+    override fun updateGoodWakeTimeStart(time: LocalTime) {
+        try {
+            val gameEntity = getGameEntity()
+            gameEntity.goodWakeTimeStart = time
+            saveOrUpdateGamePersistency(gameEntity)
+        }
+        catch (e: PersistenceException){
+            throw PersistenceException.UpdateGameException(e)
+        }
+    }
+
+    override fun updateGoodWakeTimeEnd(time: LocalTime) {
+        try {
+            val gameEntity = getGameEntity()
+            gameEntity.goodWakeTimeEnd = time
+            saveOrUpdateGamePersistency(gameEntity)
+        }
+        catch (e: PersistenceException){
+            throw PersistenceException.UpdateGameException(e)
+        }
+    }
+
+    override fun updateShoppingList(shoppingEntity: ShoppingEntity) {
+        try {
+            val gameEntity = getGameEntity()
+            gameEntity.shoppingList = shoppingEntity
             saveOrUpdateGamePersistency(gameEntity)
         }
         catch (e: PersistenceException){
