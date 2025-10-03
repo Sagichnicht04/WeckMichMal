@@ -422,20 +422,22 @@ class PickerDialogs {
                         ){
                             proposeCourses.value.forEachIndexed {
                                     index, it ->
-                                Button(
-                                    onClick = {
-                                        excludeCourse(it)
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.onBackground
-                                    ),
-                                    modifier = Modifier.padding(top = 8.dp)
-                                ){
-                                    OurText(
-                                        text = it,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier
-                                    )
+                                if(!excludeCourses.contains(it)) {
+                                    Button(
+                                        onClick = {
+                                            excludeCourse(it)
+                                        },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.onBackground
+                                        ),
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        OurText(
+                                            text = it,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier
+                                        )
+                                    }
                                 }
                             }
                         }
