@@ -84,7 +84,7 @@ class MockupCore : CoreSpecification {
                 routes = listOf(
                     Route(
                         startStation = "Wiesloch",
-                        endStation = "Duale Folter",
+                        endStation = "Hauptbahnhof",
                         startTime = LocalDateTime.of(2024,10,1,9,0,0),
                         endTime = LocalDateTime.of(2024,10,1,9,50,0),
                         sections = listOf(
@@ -101,6 +101,20 @@ class MockupCore : CoreSpecification {
                                 startStation = "Funkloch",
                                 endTime = LocalDateTime.of(2024,10,1,9,50,0),
                                 endStation = "Duale Folter",
+                            ),
+                            RouteSection(
+                                vehicleName = "STR 1",
+                                startTime = LocalDateTime.of(2024,10,1,9,55,0),
+                                startStation = "Duale Folter",
+                                endTime = LocalDateTime.of(2024,10,1,10,0,0),
+                                endStation = "Europaplatz",
+                            ),
+                            RouteSection(
+                                vehicleName = "STR 3",
+                                startTime = LocalDateTime.of(2024,10,1,10,5,0),
+                                startStation = "Europaplatz",
+                                endTime = LocalDateTime.of(2024,10,1,10,30,0),
+                                endStation = "Hauptbahnhof",
                             )
                         )
                     ),
@@ -173,13 +187,13 @@ class MockupCore : CoreSpecification {
 
     override fun updateConfigurationIchHabGeringt(
         date: LocalDate,
-        configuration: Long
+        uid: Long
     ) {
 
     }
 
     override fun getAllConfigurationAndEvent(): List<ConfigurationWithEvent>? {
-        var result = mutableListOf<ConfigurationWithEvent>()
+        val result = mutableListOf<ConfigurationWithEvent>()
         mockupConfigurations.forEach {
             val configurationEntity = it
             var event : Event? = null

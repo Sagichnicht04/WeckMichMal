@@ -40,7 +40,6 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,13 +53,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
-import de.heinzenburger.g2_weckmichmal.core.MockupCore
 import de.heinzenburger.g2_weckmichmal.persistence.Logger
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.NumberField
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurText
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurTextField
-import de.heinzenburger.g2_weckmichmal.ui.screens.WelcomeScreen
 import de.heinzenburger.g2_weckmichmal.ui.theme.G2_WeckMichMalTheme
 import java.util.Calendar
 import kotlin.concurrent.thread
@@ -73,9 +70,9 @@ class PickerDialogs {
         fun MinutePickerDialog(
             onConfirm: (Int) -> Unit,
             onDismiss: () -> Unit,
-            default: Int
+            default: Int?
         ) {
-            var selectedNumber = remember { mutableIntStateOf(default) }
+            val selectedNumber = remember { mutableStateOf(default) }
             Dialog(onDismissRequest = { onDismiss() }) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
@@ -108,7 +105,14 @@ class PickerDialogs {
                             )
                             {
                                 IconButton(
-                                    onClick = {selectedNumber.intValue++},
+                                    onClick = {
+                                                if(selectedNumber.value == null){
+                                                    selectedNumber.value = 1
+                                                }
+                                                else{
+                                                    selectedNumber.value = (selectedNumber.value as Int)+1
+                                                }
+                                              },
                                     modifier = Modifier.fillMaxHeight(0.1f)
                                 ) {
                                     Icon(Icons.Filled.ArrowDropUp,
@@ -118,7 +122,14 @@ class PickerDialogs {
                                     )
                                 }
                                 IconButton(
-                                    onClick = {selectedNumber.intValue--},
+                                    onClick = {
+                                        if(selectedNumber.value == null){
+                                            selectedNumber.value = -1
+                                        }
+                                        else{
+                                            selectedNumber.value = (selectedNumber.value as Int)-1
+                                        }
+                                    },
                                     modifier = Modifier.fillMaxHeight(0.12f)
                                 )
                                 {
@@ -144,7 +155,7 @@ class PickerDialogs {
                             }
                             TextButton(
                                 onClick = {
-                                    onConfirm(selectedNumber.intValue)
+                                    onConfirm(selectedNumber.value ?: 0)
                                           },
                                 modifier = Modifier.padding(8.dp),
                             ) {
@@ -164,9 +175,9 @@ class PickerDialogs {
             core: CoreSpecification
         ) {
             Dialog(onDismissRequest = { onDismiss() }) {
-                var station = remember { mutableStateOf("") }
-                var stationPrediction = remember { mutableStateOf("") }
-                var stationPredictions = remember { mutableStateOf(listOf("--")) }
+                val station = remember { mutableStateOf("") }
+                val stationPrediction = remember { mutableStateOf("") }
+                val stationPredictions = remember { mutableStateOf(listOf("--")) }
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                     modifier = Modifier
@@ -186,14 +197,18 @@ class PickerDialogs {
                             onValueChange = {
                                 station.value = it.replace("\n","")
                                 thread{
-                                    if(station.value.length > 2){
-                                        try {
-                                            stationPredictions.value = core.deriveStationName(it)!!
-                                        }
-                                        catch (e: Exception){
-                                            core.log(Logger.Level.SEVERE, e.message.toString())
-                                            core.log(Logger.Level.SEVERE, e.stackTraceToString())
-                                            core.showToast("Da hat etwas nicht geklappt")
+                                    val currentStation = station.value
+                                    Thread.sleep(500)
+                                    if(currentStation == station.value){
+                                        if(station.value.length > 2){
+                                            try {
+                                                stationPredictions.value = core.deriveStationName(it)!!
+                                            }
+                                            catch (e: Exception){
+                                                core.log(Logger.Level.SEVERE, e.message.toString())
+                                                core.log(Logger.Level.SEVERE, e.stackTraceToString())
+                                                core.showToast("Da hat etwas nicht geklappt")
+                                            }
                                         }
                                     }
                                 } },
@@ -323,12 +338,12 @@ class PickerDialogs {
             listOfCourses: List<String>,
             listOfExcludedCourses: List<String>,
         ) {
-            var excludeCourses = remember { mutableStateListOf<String>()}
+            val excludeCourses = remember { mutableStateListOf<String>()}
             listOfExcludedCourses.forEach {
                 excludeCourses.add(it)
             }
-            var excludeCourse = remember { mutableStateOf("") }
-            var proposeCourses = remember { mutableStateOf(listOfCourses) }
+            val excludeCourse = remember { mutableStateOf("") }
+            val proposeCourses = remember { mutableStateOf(listOfCourses) }
 
             fun excludeCourse(it: String){
                 var isCourseAlreadyExcluded = false
@@ -398,7 +413,7 @@ class PickerDialogs {
                             value = excludeCourse.value,
                             onValueChange = {
                                 excludeCourse.value = it
-                                var newProposeCourseList = mutableListOf<String>()
+                                val newProposeCourseList = mutableListOf<String>()
                                 listOfCourses.forEach {
                                     if(it.lowercase().contains(excludeCourse.value.lowercase()) == true){
                                         newProposeCourseList.add(it)
@@ -422,20 +437,22 @@ class PickerDialogs {
                         ){
                             proposeCourses.value.forEachIndexed {
                                     index, it ->
-                                Button(
-                                    onClick = {
-                                        excludeCourse(it)
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.onBackground
-                                    ),
-                                    modifier = Modifier.padding(top = 8.dp)
-                                ){
-                                    OurText(
-                                        text = it,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier
-                                    )
+                                if(!excludeCourses.contains(it)) {
+                                    Button(
+                                        onClick = {
+                                            excludeCourse(it)
+                                        },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.onBackground
+                                        ),
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        OurText(
+                                            text = it,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -453,10 +470,10 @@ class PickerDialogs {
             registerForActivityResult: ActivityResultLauncher<String>
         ) {
             // State for granted permissions and dialog dismissal
-            var permissions = remember { mutableStateOf(core.getGrantedPermissions()) }
-            var dismiss = remember { mutableStateOf(false) }
+            val permissions = remember { mutableStateOf(core.getGrantedPermissions()) }
+            val dismiss = remember { mutableStateOf(false) }
             val ignorePermission = remember { mutableStateListOf("") }
-            var context = LocalContext.current
+            val context = LocalContext.current
             Dialog(
                 onDismissRequest = {
                     dismiss.value = true
@@ -601,10 +618,12 @@ class PickerDialogs {
 @Composable
 fun SettingsScreenPreview() {
     G2_WeckMichMalTheme {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            WelcomeScreen().Greeting(modifier = Modifier, core = MockupCore())
-        }
+        PickerDialogs.MinutePickerDialog(
+            { minutes: Int ->
+            },
+            {
+            },
+            default = 0,
+        )
     }
 }

@@ -148,7 +148,13 @@ class InformationScreen : ComponentActivity() {
                             modifier = Modifier.padding(16.dp).fillMaxWidth(0.65f),
                         )
                         OurText(
-                            text = String.format("%.2f €", meal.price),
+                            text =
+                                if(meal.price > 0){
+                                    String.format("%.2f €", meal.price)
+                                }
+                                else{
+                                    ""
+                                },
                             textAlign = TextAlign.Right,
                             modifier = Modifier.padding(top=16.dp, bottom = 16.dp, end = 16.dp).fillMaxWidth()
                         )
@@ -181,7 +187,7 @@ class InformationScreen : ComponentActivity() {
 
     // Opens the mensa menu in the browser
     fun openMensaInBrowser(){
-        var url = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?view=ok&c=erzberger&STYLE=popup_plain"
+        val url = "https://www.sw-ka.de/de/hochschulgastronomie/speiseplan/mensa_erzberger/?view=ok&c=erzberger&STYLE=popup_plain"
         val intent = Intent(Intent.ACTION_VIEW, url.toUri())
         intent.flags =
             Intent.FLAG_ACTIVITY_NEW_TASK

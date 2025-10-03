@@ -15,6 +15,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -98,7 +100,7 @@ class AlarmRingingScreen : ComponentActivity(){
             }
 
             // Retrieve configuration and event from intent
-            var configurationWithEvent =
+            val configurationWithEvent =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(
                         "configurationWithEvent",
@@ -196,6 +198,7 @@ class AlarmRingingScreen : ComponentActivity(){
                             detailedViewForRoute.value = it
                         }
                               },
+                    shape = RectangleShape,
                     contentPadding = PaddingValues(),
                     colors = ButtonDefaults.buttonColors(Color.Transparent)
                 ) {
@@ -208,7 +211,8 @@ class AlarmRingingScreen : ComponentActivity(){
                                     MaterialTheme.colorScheme.onBackground
                                 } else {
                                     MaterialTheme.colorScheme.onPrimary
-                                }, RoundedCornerShape(20)
+                                },
+                                RoundedCornerShape(20)
                             )
                             .fillMaxWidth()
                             .padding(10.dp),
@@ -293,18 +297,23 @@ class AlarmRingingScreen : ComponentActivity(){
                     .fillMaxSize()
             )
             {
-                if(!swipedLeft.value) {
-                    OverviewComposable()
-                }
-                else{
-                    if(core.isInternetAvailable()){
-                        val informationScreen = InformationScreen()
-                        informationScreen.core = core
-                        informationScreen.InnerMensaComposable(PaddingValues(top = 32.dp))
-                    }
-                    else{
-                        core.showToast("Mensa Essensplan kann nur bei aktiver Internetverbindung angezeigt werden.")
-                        swipedLeft.value = false
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.75f)
+                )
+                {
+                    if (!swipedLeft.value) {
+                        OverviewComposable()
+                    } else {
+                        if (core.isInternetAvailable()) {
+                            val informationScreen = InformationScreen()
+                            informationScreen.core = core
+                            informationScreen.InnerMensaComposable(PaddingValues(top = 32.dp))
+                        } else {
+                            core.showToast("Mensa Essensplan kann nur bei aktiver Internetverbindung angezeigt werden.")
+                            swipedLeft.value = false
+                        }
                     }
                 }
             }
