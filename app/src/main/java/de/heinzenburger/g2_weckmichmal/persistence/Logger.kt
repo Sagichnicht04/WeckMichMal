@@ -96,7 +96,7 @@ data class Logger(
     fun getLogs() : String{
         try{
             if(context != null){
-                var text = File(context.filesDir,"log").readText().split("\n").reversed().joinToString("\n")
+                val text = File(context.filesDir,"log").readText().split("\n").reversed().joinToString("\n")
                 return text
             } else{
                 return "Called getLogs without context"
