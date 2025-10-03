@@ -65,6 +65,45 @@ import kotlin.concurrent.thread
 // PickerDialogs provides various dialog components for user input and permissions
 class PickerDialogs {
     companion object{
+
+        //Dialog that explains game mode
+        @OptIn(ExperimentalMaterial3Api::class)
+        @Composable
+        fun ExplainGameModeDialog(
+            currentMode: Boolean,
+            onConfirm: (newMode: Boolean) -> Unit,
+            onDismiss: () -> Unit,
+        ) {
+            AlertDialog(
+                containerColor = MaterialTheme.colorScheme.background,
+                onDismissRequest = onDismiss,
+                dismissButton = {
+                    TextButton(
+                        onClick = { onDismiss() }
+                    ) {
+                        Text("Abbrechen", color = MaterialTheme.colorScheme.secondary)
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { onConfirm(!currentMode) }) {
+                        if(currentMode){
+                            Text("Deaktivieren", color = MaterialTheme.colorScheme.secondary)
+                        }
+                        else{
+                            Text("Aktivieren", color = MaterialTheme.colorScheme.secondary)
+                        }
+                    }
+                },
+                text = {
+                    OurText(
+                        text = "Spielmodus " +if(currentMode) "aktiviert" else "nicht aktiviert",
+                        modifier = Modifier
+                    )
+                }
+            )
+        }
+
+
         //Dialogs for Picking LocalTime and Minutes
         @Composable
         fun MinutePickerDialog(
@@ -618,12 +657,12 @@ class PickerDialogs {
 @Composable
 fun SettingsScreenPreview() {
     G2_WeckMichMalTheme {
-        PickerDialogs.MinutePickerDialog(
-            { minutes: Int ->
+        PickerDialogs.ExplainGameModeDialog(
+            currentMode = true,
+            { isGameMode: Boolean ->
             },
             {
             },
-            default = 0,
         )
     }
 }

@@ -143,6 +143,11 @@ interface InterfaceApplicationSettings {
      * Update course url in the database
      */
     fun updateCourseURL(url: String)
+
+    /**
+     * Update game mode in the database
+     */
+    fun updateIsGameMode(isGameMode: Boolean)
 }
 
 /**
@@ -293,7 +298,8 @@ data class SettingsEntity(
     /** The WebLink leading to the RAPLA schedule. */
     var raplaURL: String? = "",
     var defaultValues: DefaultAlarmValues = DefaultAlarmValues(),
-    var excludeCourses: List<String> = mutableListOf<String>()
+    var excludeCourses: List<String> = mutableListOf<String>(),
+    var isGameMode: Boolean = false
 ){
     @Parcelize
     data class DefaultAlarmValues(

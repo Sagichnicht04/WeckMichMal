@@ -75,4 +75,15 @@ data class ApplicationSettingsHandler (
             throw PersistenceException.UpdateSettingsException(e)
         }
     }
+
+    override fun updateIsGameMode(isGameMode: Boolean) {
+        try {
+            val settings = getApplicationSettings()
+            settings.isGameMode = isGameMode
+            saveOrUpdateApplicationSettings(settings)
+        }
+        catch (e: PersistenceException){
+            throw PersistenceException.UpdateSettingsException(e)
+        }
+    }
 }

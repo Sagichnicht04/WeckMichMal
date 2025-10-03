@@ -32,6 +32,17 @@ interface CoreSpecification {
     fun saveRaplaURL(url : String)
 
     /**
+     * Update the isGameMode parameter in the settings database
+     * @param isGameMode Variable that toggles Application Game Mode
+     */
+    fun updateIsGameMode(isGameMode : Boolean)
+
+    /**
+     * Get the isGameMode from the settings database
+     */
+    fun getIsGameMode(): Boolean?
+
+    /**
      * Save the rapla URL to the settings database
      * @param director of the course
      * @param course id

@@ -33,6 +33,7 @@ import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.Loa
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurText
 import de.heinzenburger.g2_weckmichmal.ui.components.NavBar
 import de.heinzenburger.g2_weckmichmal.ui.components.PickerDialogs.Companion.ExcludeCourseDialog
+import de.heinzenburger.g2_weckmichmal.ui.components.PickerDialogs.Companion.ExplainGameModeDialog
 import de.heinzenburger.g2_weckmichmal.ui.components.SaveURL
 import de.heinzenburger.g2_weckmichmal.ui.theme.G2_WeckMichMalTheme
 import kotlin.concurrent.thread
@@ -41,7 +42,11 @@ import kotlin.concurrent.thread
 class SettingsScreen : ComponentActivity() {
     var listOfCourses = mutableStateListOf<String>()
     var listOfExcludedCourses = mutableStateListOf<String>()
+
+    var isGameMode: Boolean? = null
+    var isGameModeLoaded = false
     private var openLoadingScreen = mutableStateOf(false)
+    private var openGameModeScreen = mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -53,6 +58,8 @@ class SettingsScreen : ComponentActivity() {
             }
             // Load courses and excluded courses in a background thread
             thread {
+                isGameMode = core.getIsGameMode()
+                isGameModeLoaded = true
                 core.getListOfNameOfCourses()?.forEach { listOfCourses.add(it) }
                 core.getListOfExcludedCourses()?.forEach { listOfExcludedCourses.add(it) }
             }
@@ -111,6 +118,19 @@ class SettingsScreen : ComponentActivity() {
                 LoadingScreen()
             }
         }
+        when{
+            openGameModeScreen.value ->{
+                ExplainGameModeDialog(
+                    currentMode = isGameMode == true,
+                    onConfirm = {
+                        newIsGameMode -> core.updateIsGameMode(newIsGameMode)
+                        openGameModeScreen.value = false
+                        isGameMode = newIsGameMode
+                    },
+                    onDismiss = { openGameModeScreen.value = false }
+                )
+            }
+        }
 
         Column(
             Modifier
@@ -142,6 +162,24 @@ class SettingsScreen : ComponentActivity() {
 
                 Button(
                     onClick = {
+                        if(isGameModeLoaded){
+                            openGameModeScreen.value = true
+                        }
+                    },
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onBackground
+                    )
+                ) {
+                    OurText(
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier,
+                        text = "Spielmodus"
+                    )
+                }
+
+                Button(
+                    onClick = {
                         openLoadingScreen.value = true
                         val intent = Intent(context, LogScreen::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
@@ -160,7 +198,7 @@ class SettingsScreen : ComponentActivity() {
 
                 Text(
                     text = "Vorlesungsplan",
-                    modifier = Modifier.padding(top = 48.dp),
+                    modifier = Modifier.padding(top = 16.dp),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleSmall
                 )

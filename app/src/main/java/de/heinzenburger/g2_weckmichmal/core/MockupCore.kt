@@ -147,6 +147,12 @@ class MockupCore : CoreSpecification {
 
     override fun runUpdateLogic() {}
     override fun saveRaplaURL(url : String){}
+    override fun updateIsGameMode(isGameMode: Boolean) {}
+
+    override fun getIsGameMode(): Boolean? {
+        return null
+    }
+
     override fun saveRaplaURL(director: String, course: String) {
 
     }

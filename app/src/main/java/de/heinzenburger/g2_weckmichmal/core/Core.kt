@@ -120,9 +120,20 @@ data class Core(
     }
 
     /**Settings**/
-    override fun saveRaplaURL(urlString : String){
+    override fun getIsGameMode():Boolean?{
+        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving mode from database. Try reinstalling the app."){
+            persistenceOperations.getIsGameMode()
+        }
+    }
+
+    override fun updateIsGameMode(isGameMode : Boolean){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating mode. Try reinstalling the app."){
+            persistenceOperations.updateIsGameMode(isGameMode)
+        }
+    }
+    override fun saveRaplaURL(url : String){
         exceptionHandler.runWithUnexpectedExceptionHandler("Error saving URL to database. Try reinstalling the app."){
-            persistenceOperations.saveRaplaURL(urlString)
+            persistenceOperations.saveRaplaURL(url)
         }
     }
 
