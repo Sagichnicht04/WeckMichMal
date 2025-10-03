@@ -15,6 +15,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -296,18 +297,23 @@ class AlarmRingingScreen : ComponentActivity(){
                     .fillMaxSize()
             )
             {
-                if(!swipedLeft.value) {
-                    OverviewComposable()
-                }
-                else{
-                    if(core.isInternetAvailable()){
-                        val informationScreen = InformationScreen()
-                        informationScreen.core = core
-                        informationScreen.InnerMensaComposable(PaddingValues(top = 32.dp))
-                    }
-                    else{
-                        core.showToast("Mensa Essensplan kann nur bei aktiver Internetverbindung angezeigt werden.")
-                        swipedLeft.value = false
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.75f)
+                )
+                {
+                    if (!swipedLeft.value) {
+                        OverviewComposable()
+                    } else {
+                        if (core.isInternetAvailable()) {
+                            val informationScreen = InformationScreen()
+                            informationScreen.core = core
+                            informationScreen.InnerMensaComposable(PaddingValues(top = 32.dp))
+                        } else {
+                            core.showToast("Mensa Essensplan kann nur bei aktiver Internetverbindung angezeigt werden.")
+                            swipedLeft.value = false
+                        }
                     }
                 }
             }
