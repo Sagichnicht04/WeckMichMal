@@ -20,17 +20,7 @@ import java.time.LocalDateTime
 class PersistenceOperations(
     val core: Core
 ){
-    fun updateIsGameMode(isGameMode: Boolean){
-        val applicationSettingsHandler = ApplicationSettingsHandler(core.context)
-        applicationSettingsHandler.updateIsGameMode(isGameMode)
-        core.log(Logger.Level.INFO, "IsGameMode saved: $isGameMode")
-    }
 
-    fun getIsGameMode():Boolean{
-        val applicationSettingsHandler = ApplicationSettingsHandler(core.context)
-        core.log(Logger.Level.INFO, "Reading IsGameMode")
-        return applicationSettingsHandler.getApplicationSettings().isGameMode
-    }
 
     fun saveRaplaURL(urlString : String){
         if(urlString == "" || core.isValidCourseURL(urlString)){

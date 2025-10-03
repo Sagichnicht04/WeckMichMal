@@ -21,6 +21,7 @@ data class Core(
 ) : CoreSpecification {
     val logger = Logger(context)
     private val persistenceOperations = PersistenceOperations(this)
+    private val gameOperations = GameOperations(this)
     private val validations = Validations(this)
     private val exceptionHandler = ExceptionHandler(this)
     private val backgroundOperations = BackgroundOperations(this)
@@ -122,13 +123,13 @@ data class Core(
     /**Settings**/
     override fun getIsGameMode():Boolean?{
         return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving mode from database. Try reinstalling the app."){
-            persistenceOperations.getIsGameMode()
+            gameOperations.getIsGameMode()
         }
     }
 
     override fun updateIsGameMode(isGameMode : Boolean){
         exceptionHandler.runWithUnexpectedExceptionHandler("Error updating mode. Try reinstalling the app."){
-            persistenceOperations.updateIsGameMode(isGameMode)
+            gameOperations.updateIsGameMode(isGameMode)
         }
     }
     override fun saveRaplaURL(url : String){
