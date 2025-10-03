@@ -9,14 +9,14 @@ plugins {
 
 android {
     namespace = "de.heinzenburger.g2_weckmichmal"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "de.heinzenburger.g2_weckmichmal"
         minSdk = 31
-        targetSdk = 34
-        versionCode = 10
-        versionName = "1.9"
+        targetSdk = 36
+        versionCode = 15
+        versionName = "2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

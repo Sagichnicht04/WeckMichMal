@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.2"
+agp = "8.13.0"
 biweekly = "0.6.8"
 fuel = "3.0.0-alpha04"
 gson = "2.10.1"
