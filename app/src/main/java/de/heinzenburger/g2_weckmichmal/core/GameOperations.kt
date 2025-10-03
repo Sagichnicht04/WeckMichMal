@@ -1,6 +1,7 @@
 package de.heinzenburger.g2_weckmichmal.core
 
 import de.heinzenburger.g2_weckmichmal.persistence.ApplicationSettingsHandler
+import de.heinzenburger.g2_weckmichmal.persistence.GamePersistency
 import de.heinzenburger.g2_weckmichmal.persistence.Logger
 
 class GameOperations(
@@ -16,5 +17,17 @@ class GameOperations(
         val applicationSettingsHandler = ApplicationSettingsHandler(core.context)
         core.log(Logger.Level.INFO, "Reading IsGameMode")
         return applicationSettingsHandler.getApplicationSettings().isGameMode
+    }
+
+    fun getCoins():Int{
+        val gamePersistency = GamePersistency(core.context)
+        core.log(Logger.Level.INFO, "Reading coins")
+        return gamePersistency.getGameEntity().coins
+    }
+
+    fun updateCoins(coins: Int){
+        val gamePersistency = GamePersistency(core.context)
+        gamePersistency.updateCoins(coins)
+        core.log(Logger.Level.INFO, "Updating coins: $coins")
     }
 }

@@ -109,6 +109,32 @@ interface InterfaceEventHandler {
     @Throws(PersistenceException.UpdateEventException::class)
     fun removeEvent(configID: Long)
 }
+
+interface InterfaceGamePersistency{
+
+    /**
+     * Overrides the game storage in the persistence layer
+     */
+    @Throws(PersistenceException.WriteGameException::class)
+    fun saveOrUpdateGamePersistency(gameEntity: GameEntity)
+    /**
+     * Returns the game information from the persistence layer.
+     *
+     * @return A [SettingsEntity] object.
+     */
+    @Throws(PersistenceException.ReadGameException::class)
+    fun getGameEntity(): GameEntity
+    /**
+     * A boolean that indicates whether the game file already exists
+     */
+    fun isGameNotInitialized(): Boolean
+
+    /**
+     * Update the player coins
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateCoins(coins: Int)
+}
 interface InterfaceApplicationSettings {
     /**
      * Overrides the application settings in the persistence layer with the given parameter.
@@ -322,8 +348,29 @@ data class SettingsEntity(
     }
 }
 
+/**
+ * All persistent information about the game
+ */
+data class GameEntity(
+    var coins: Int = 0
+)
+
 sealed class PersistenceException(message: String?, cause: Exception?) :
     Exception(message, cause) {
+    /**
+     * Thrown when updating settings.json fails
+     */
+    class UpdateGameException(cause: Exception?): PersistenceException("Error updating game file", cause)
+
+    /**
+     * Thrown when writing to settings.json fails
+     */
+    class WriteGameException(cause: Exception?): PersistenceException("Error writing information to game file", cause)
+
+    /**
+     * Thrown when writing to settings.json fails
+     */
+    class ReadGameException(cause: Exception?): PersistenceException("Error reading information from game file", cause)
 
     /**
      * Thrown when updating settings.json fails
