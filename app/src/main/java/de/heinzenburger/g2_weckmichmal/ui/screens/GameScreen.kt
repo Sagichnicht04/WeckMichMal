@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,15 +63,13 @@ class GameScreen : ComponentActivity() {
 
     //Main component
     val innerGameComposable : @Composable (PaddingValues, CoreSpecification) -> Unit = { innerPadding: PaddingValues, core: CoreSpecification ->
-        val context = LocalContext.current
-        val openExcludeCourseDialog = remember { mutableStateOf(false) }
 
         Column(
             Modifier
-                .padding(16.dp)
+                .padding(24.dp)
                 .background(MaterialTheme.colorScheme.background)) {
             OurText(
-                text = "Coins: " + coins.intValue.toString(),
+                text = "Belohnungen: " + coins.intValue.toString(),
                 modifier = Modifier,
             )
         }

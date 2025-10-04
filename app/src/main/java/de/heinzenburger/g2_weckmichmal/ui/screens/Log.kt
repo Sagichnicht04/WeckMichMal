@@ -126,7 +126,6 @@ class LogScreen : ComponentActivity() {
                     modifier = Modifier.padding(0.dp, 20.dp, 0.dp, 0.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     onClick = {
-                        AlarmClockOverviewScreen.aPlatypus = !AlarmClockOverviewScreen.aPlatypus
                     }
                 ) {
                     Text(
