@@ -80,15 +80,16 @@ class PickerDialogs {
             currentGoodWakeTimeStart: LocalTime,
             currentGoodWakeTimeEnd: LocalTime,
             currentLastConfigurationChanged: LocalDate,
-            onConfirm: (newMode: Boolean, currentGoodWakeTimeStart: LocalTime, currentGoodWakeTimeEnd: LocalTime) -> Unit,
-            onDismiss: (currentGoodWakeTimeStart: LocalTime, currentGoodWakeTimeEnd: LocalTime) -> Unit,
+            onConfirm: (newMode: Boolean) -> Unit,
+            onWindowChange: (newMode: Boolean, currentGoodWakeTimeStart: LocalTime, currentGoodWakeTimeEnd: LocalTime)->Unit,
+            onDismiss: () -> Unit,
         ) {
             val openStartTime = remember { mutableStateOf(false) }
             val openEndTime = remember { mutableStateOf(false) }
             val goodWakeTimeStart = remember { mutableStateOf(currentGoodWakeTimeStart) }
             val goodWakeTimeEnd = remember { mutableStateOf(currentGoodWakeTimeEnd) }
             val lastConfigurationChanged = remember { mutableStateOf(currentLastConfigurationChanged) }
-            Dialog(onDismissRequest = { onDismiss(goodWakeTimeStart.value, goodWakeTimeEnd.value) })
+            Dialog(onDismissRequest = onDismiss )
             {
                 when {
                     openStartTime.value -> {
@@ -115,13 +116,34 @@ class PickerDialogs {
                     }
                 }
                 Column(
-                    modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                    modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(top = 16.dp),
 
                 ){
                     OurText(
-                        text = "Spielmodus " +if(currentMode) "aktiviert" else "nicht aktiviert",
-                        modifier = Modifier.fillMaxWidth()
+                        text = "Der Spielmodus ist " + if(currentMode) "aktiviert" else "deaktiviert",
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
                     )
+                    Button(
+                        modifier = Modifier.fillMaxWidth(0.75f).align(alignment = Alignment.CenterHorizontally).padding(bottom = 16.dp),
+                        enabled = true,
+                        onClick = { onConfirm(!currentMode) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        if(currentMode){
+                            OurText(text = "Spielmodus deaktivieren", color = MaterialTheme.colorScheme.primary, modifier = Modifier)
+                        }
+                        else{
+                            OurText(text = "Spielmodus aktivieren", color = MaterialTheme.colorScheme.primary, modifier = Modifier)
+                        }
+                    }
+
+                    OurText(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        text = "Der Spielmodus unterstützt gesunde Schlafgewohnheiten indem das Aufwachen mithilfe des Weckers der App belohnt wird. Täglich kann maximal eine Belohnung verdient werden, vorrausgesetzt, er klingelt im gesetztem Zeitraum. Dieser kann einmal im Monat angepasst werden. Je kleiner der Zeitraum, desto größer die Belohnung.", modifier = Modifier)
+
 
                     if(lastConfigurationChanged.value.year < LocalDateTime.now().year
                         || lastConfigurationChanged.value.month < LocalDateTime.now().month) {
@@ -175,6 +197,19 @@ class PickerDialogs {
                                 )
                             }
                         }
+                        if(goodWakeTimeStart.value != currentGoodWakeTimeStart || goodWakeTimeEnd.value != currentGoodWakeTimeEnd){
+                            Button(
+                                modifier = Modifier.fillMaxWidth(0.75f).align(alignment = Alignment.CenterHorizontally).padding(8.dp),
+                                enabled = true,
+                                onClick = { onWindowChange(!currentMode,goodWakeTimeStart.value,goodWakeTimeEnd.value) },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.onBackground
+                                ),
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                OurText(text = "Speichern", color = MaterialTheme.colorScheme.primary, modifier = Modifier)
+                            }
+                        }
                     }
                     else{
                         OurText(
@@ -192,24 +227,10 @@ class PickerDialogs {
                                     LocalDate.from(lastConfigurationChanged.value).plusMonths(1).withDayOfMonth(1)
                                     .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
                             ,
-                            modifier = Modifier
+                            modifier = Modifier.padding(top = 24.dp)
                         )
                     }
-
-                    TextButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { onConfirm(!currentMode,goodWakeTimeStart.value,goodWakeTimeEnd.value) }
-                    ) {
-                        if(currentMode){
-                            Text("Spielmodus deaktivieren", color = MaterialTheme.colorScheme.secondary)
-                        }
-                        else{
-                            Text("Spielmodus aktivieren", color = MaterialTheme.colorScheme.secondary)
-                        }
-                    }
-
                 }
-
             }
         }
 
@@ -771,11 +792,10 @@ fun SettingsScreenPreview() {
             currentMode = true,
             currentGoodWakeTimeStart = LocalTime.of(7,0),
             currentGoodWakeTimeEnd = LocalTime.of(8,0),
-            currentLastConfigurationChanged = LocalDate.now(),
-            {gameMode, currentGoodWakeTimeStart, currentGoodWakeTimeEnd ->
-            },
-            {currentGoodWakeTimeStart, currentGoodWakeTimeEnd ->
-            },
+            currentLastConfigurationChanged = LocalDate.MIN,
+            {gameMode -> },
+            {gameMode, currentGoodWakeTimeStart, currentGoodWakeTimeEnd -> },
+            { },
         )
     }
 }

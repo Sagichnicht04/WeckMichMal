@@ -137,14 +137,24 @@ class SettingsScreen : ComponentActivity() {
                     currentGoodWakeTimeEnd = currentGoodWakeTimeEnd,
                     currentLastConfigurationChanged = currentLastConfigurationChanged,
                     onConfirm = {
+                            newIsGameMode->
+                        thread{
+                            core.updateIsGameMode(newIsGameMode)
+                            val intent = Intent(context, this::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                            startActivity(intent)
+                            finish()
+                        }
+                        openGameModeScreen.value = false
+                        isGameMode = newIsGameMode
+                    },
+                    onWindowChange = {
                         newIsGameMode, newGoodWakeTimeStart, newGoodWakeTimeEnd ->
                         thread{
                             core.updateIsGameMode(newIsGameMode)
-                            if(newGoodWakeTimeStart!=currentGoodWakeTimeStart || newGoodWakeTimeEnd!=currentGoodWakeTimeEnd){
-                                core.updateGoodWakeTimeStart(newGoodWakeTimeStart)
-                                core.updateGoodWakeTimeEnd(newGoodWakeTimeEnd)
-                                core.updateLastConfiguratoinChanged(LocalDate.now())
-                            }
+                            core.updateGoodWakeTimeStart(newGoodWakeTimeStart)
+                            core.updateGoodWakeTimeEnd(newGoodWakeTimeEnd)
+                            core.updateLastConfiguratoinChanged(LocalDate.now())
                             val intent = Intent(context, this::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                             startActivity(intent)
@@ -154,19 +164,7 @@ class SettingsScreen : ComponentActivity() {
                         isGameMode = newIsGameMode
                     },
                     onDismiss = {
-                        newGoodWakeTimeStart,newGoodWakeTimeEnd ->
                         openGameModeScreen.value = false
-                        thread{
-                            if(newGoodWakeTimeStart!=currentGoodWakeTimeStart || newGoodWakeTimeEnd!=currentGoodWakeTimeEnd){
-                                core.updateGoodWakeTimeStart(newGoodWakeTimeStart)
-                                core.updateGoodWakeTimeEnd(newGoodWakeTimeEnd)
-                                core.updateLastConfiguratoinChanged(LocalDate.now())
-                            }
-                            val intent = Intent(context, this::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                            startActivity(intent)
-                            finish()
-                        }
                     }
                 )
             }
