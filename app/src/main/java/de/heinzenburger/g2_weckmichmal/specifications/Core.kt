@@ -1,5 +1,6 @@
 package de.heinzenburger.g2_weckmichmal.specifications
 
+import de.heinzenburger.g2_weckmichmal.game.CoinManager
 import de.heinzenburger.g2_weckmichmal.persistence.Logger
 import de.heinzenburger.g2_weckmichmal.specifications.SettingsEntity.DefaultAlarmValues
 import java.time.LocalDate
@@ -174,4 +175,10 @@ interface CoreSpecification {
     fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate)
     fun getLastTimeCoinsReceived(): LocalDate?
     fun gameEventAlarmRinging()
+
+    companion object{
+        fun getRewardForWindow(startTime: LocalTime, endTime: LocalTime): Int{
+            return CoinManager.getRewardForWindow(startTime, endTime)
+        }
+    }
 }

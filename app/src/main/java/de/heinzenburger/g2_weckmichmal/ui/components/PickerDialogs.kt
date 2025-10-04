@@ -56,7 +56,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import de.heinzenburger.g2_weckmichmal.persistence.Logger
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
-import de.heinzenburger.g2_weckmichmal.specifications.GameEntity
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.NumberField
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurText
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurTextField
@@ -81,7 +80,7 @@ class PickerDialogs {
             currentGoodWakeTimeEnd: LocalTime,
             currentLastConfigurationChanged: LocalDate,
             onConfirm: (newMode: Boolean) -> Unit,
-            onWindowChange: (newMode: Boolean, currentGoodWakeTimeStart: LocalTime, currentGoodWakeTimeEnd: LocalTime)->Unit,
+            onWindowChange: (currentGoodWakeTimeStart: LocalTime, currentGoodWakeTimeEnd: LocalTime)->Unit,
             onDismiss: () -> Unit,
         ) {
             val openStartTime = remember { mutableStateOf(false) }
@@ -142,7 +141,9 @@ class PickerDialogs {
 
                     OurText(
                         color = MaterialTheme.colorScheme.onBackground,
-                        text = "Der Spielmodus unterstützt gesunde Schlafgewohnheiten indem das Aufwachen mithilfe des Weckers der App belohnt wird. Täglich kann maximal eine Belohnung verdient werden, vorrausgesetzt, er klingelt im gesetztem Zeitraum. Dieser kann einmal im Monat angepasst werden. Je kleiner der Zeitraum, desto größer die Belohnung.", modifier = Modifier)
+                        modifier = Modifier.padding(8.dp),
+                        text = "Der Spielmodus unterstützt gesunde Schlafgewohnheiten, indem das Aufwachen mithilfe des Weckers der App belohnt wird. Täglich kann eine Belohnung verdient werden, vorrausgesetzt, der Wecker klingelt im gesetztem Zeitraum. Dieser kann einmal im Monat angepasst werden. Je kürzer der Zeitraum, desto größer die Belohnung."
+                    )
 
 
                     if(lastConfigurationChanged.value.year < LocalDateTime.now().year
@@ -201,7 +202,7 @@ class PickerDialogs {
                             Button(
                                 modifier = Modifier.fillMaxWidth(0.75f).align(alignment = Alignment.CenterHorizontally).padding(8.dp),
                                 enabled = true,
-                                onClick = { onWindowChange(!currentMode,goodWakeTimeStart.value,goodWakeTimeEnd.value) },
+                                onClick = { onWindowChange(goodWakeTimeStart.value,goodWakeTimeEnd.value) },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.onBackground
                                 ),
@@ -230,6 +231,23 @@ class PickerDialogs {
                             modifier = Modifier.padding(top = 24.dp)
                         )
                     }
+                    OurText(
+                        text = "Von " +
+                                goodWakeTimeStart.value.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "HH:mm"
+                                    )
+                                ) + "-" +
+                                goodWakeTimeEnd.value.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "HH:mm"
+                                    )
+                                ) +
+                                " -  " +
+                                CoreSpecification.getRewardForWindow(goodWakeTimeStart.value, goodWakeTimeEnd.value) +
+                                "x Belohnung",
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally).padding(top = 8.dp, bottom = 24.dp)
+                    )
                 }
             }
         }
@@ -794,7 +812,7 @@ fun SettingsScreenPreview() {
             currentGoodWakeTimeEnd = LocalTime.of(8,0),
             currentLastConfigurationChanged = LocalDate.MIN,
             {gameMode -> },
-            {gameMode, currentGoodWakeTimeStart, currentGoodWakeTimeEnd -> },
+            {currentGoodWakeTimeStart, currentGoodWakeTimeEnd -> },
             { },
         )
     }

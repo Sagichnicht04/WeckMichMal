@@ -297,4 +297,15 @@ class MockupCore : CoreSpecification {
 
     override fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity) {
     }
+
+    override fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate) {
+
+    }
+
+    override fun getLastTimeCoinsReceived(): LocalDate? {
+        return null
+    }
+
+    override fun gameEventAlarmRinging() {
+    }
 }

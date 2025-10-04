@@ -149,9 +149,8 @@ class SettingsScreen : ComponentActivity() {
                         isGameMode = newIsGameMode
                     },
                     onWindowChange = {
-                        newIsGameMode, newGoodWakeTimeStart, newGoodWakeTimeEnd ->
+                        newGoodWakeTimeStart, newGoodWakeTimeEnd ->
                         thread{
-                            core.updateIsGameMode(newIsGameMode)
                             core.updateGoodWakeTimeStart(newGoodWakeTimeStart)
                             core.updateGoodWakeTimeEnd(newGoodWakeTimeEnd)
                             core.updateLastConfiguratoinChanged(LocalDate.now())
@@ -161,7 +160,6 @@ class SettingsScreen : ComponentActivity() {
                             finish()
                         }
                         openGameModeScreen.value = false
-                        isGameMode = newIsGameMode
                     },
                     onDismiss = {
                         openGameModeScreen.value = false

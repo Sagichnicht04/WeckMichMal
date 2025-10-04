@@ -50,6 +50,7 @@ class GameOperations(
     fun alarmRinging(){
         val coinManager = CoinManager(core)
         coinManager.ringRingRing()
+        core.log(Logger.Level.INFO, "Calling Alarm Ringing Event for Game")
     }
 
     fun getLastConfigurationChanged(): LocalDate{

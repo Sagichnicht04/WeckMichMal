@@ -10,6 +10,7 @@ import de.heinzenburger.g2_weckmichmal.specifications.Configuration
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
 import de.heinzenburger.g2_weckmichmal.specifications.PersistenceException
 import de.heinzenburger.g2_weckmichmal.api.courses.deriveValidCourseURL
+import de.heinzenburger.g2_weckmichmal.game.CoinManager
 import de.heinzenburger.g2_weckmichmal.persistence.GamePersistency
 import de.heinzenburger.g2_weckmichmal.specifications.GameEntity
 import de.heinzenburger.g2_weckmichmal.specifications.MensaMeal

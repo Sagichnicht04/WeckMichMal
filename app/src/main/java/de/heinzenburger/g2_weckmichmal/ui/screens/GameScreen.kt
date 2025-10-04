@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import de.heinzenburger.g2_weckmichmal.core.Core
 import de.heinzenburger.g2_weckmichmal.core.ExceptionHandler
 import de.heinzenburger.g2_weckmichmal.core.MockupCore
@@ -69,10 +70,10 @@ class GameScreen : ComponentActivity() {
 
         Column(
             Modifier
-                .padding(innerPadding)
+                .padding(16.dp)
                 .background(MaterialTheme.colorScheme.background)) {
             OurText(
-                text = coins.intValue.toString(),
+                text = "Coins: " + coins.intValue.toString(),
                 modifier = Modifier,
             )
         }
