@@ -154,6 +154,12 @@ interface InterfaceGamePersistency{
      */
     @Throws(PersistenceException.UpdateGameException::class)
     fun updateGoodWakeTimeStart(time: LocalTime)
+
+    /**
+     * Update the last time coin reward is received
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate)
 }
 interface InterfaceApplicationSettings {
     /**
@@ -375,6 +381,8 @@ data class GameEntity(
     var coins: Int = 0,
     private var lastConfigurationChange: String = LocalDate.of(1990,1,1)
         .format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+    private var lastTimeCoinsReceived: String = LocalDate.of(1990,1,1)
+        .format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
     private var goodWakeTimeStart: String = LocalTime.of(7,0).format(
         DateTimeFormatter.ofPattern(
             "HH:mm"
@@ -392,6 +400,12 @@ data class GameEntity(
     }
     fun getLastConfigurationChange(): LocalDate{
         return LocalDate.parse(this.lastConfigurationChange, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    }
+    fun setLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate){
+        this.lastTimeCoinsReceived = lastTimeCoinsReceived.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    }
+    fun getLastTimeCoinsReceived(): LocalDate{
+        return LocalDate.parse(this.lastTimeCoinsReceived, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
     }
     fun setGoodWakeTimeStart(goodWakeTimeStart: LocalTime){
         this.goodWakeTimeStart = goodWakeTimeStart.format(DateTimeFormatter.ofPattern("HH:mm"))

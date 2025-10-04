@@ -56,6 +56,17 @@ data class GamePersistency (
         }
     }
 
+    override fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate) {
+        try {
+            val gameEntity = getGameEntity()
+            gameEntity.setLastTimeCoinsReceived(lastTimeCoinsReceived)
+            saveOrUpdateGamePersistency(gameEntity)
+        }
+        catch (e: PersistenceException){
+            throw PersistenceException.UpdateGameException(e)
+        }
+    }
+
 
     override fun updateLastConfigurationChange(date: LocalDate) {
         try {

@@ -1,5 +1,6 @@
 package de.heinzenburger.g2_weckmichmal.core
 
+import de.heinzenburger.g2_weckmichmal.game.CoinManager
 import de.heinzenburger.g2_weckmichmal.persistence.ApplicationSettingsHandler
 import de.heinzenburger.g2_weckmichmal.persistence.GamePersistency
 import de.heinzenburger.g2_weckmichmal.persistence.Logger
@@ -32,6 +33,23 @@ class GameOperations(
         val gamePersistency = GamePersistency(core.context)
         gamePersistency.updateCoins(coins)
         core.log(Logger.Level.INFO, "Updating coins: $coins")
+    }
+
+    fun getLastTimeCoinsReceived():LocalDate{
+        val gamePersistency = GamePersistency(core.context)
+        core.log(Logger.Level.INFO, "Reading coins")
+        return gamePersistency.getGameEntity().getLastTimeCoinsReceived()
+    }
+
+    fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate){
+        val gamePersistency = GamePersistency(core.context)
+        gamePersistency.updateLastTimeCoinsReceived(lastTimeCoinsReceived)
+        core.log(Logger.Level.INFO, "Updating last time coins received: $lastTimeCoinsReceived")
+    }
+
+    fun alarmRinging(){
+        val coinManager = CoinManager(core)
+        coinManager.ringRingRing()
     }
 
     fun getLastConfigurationChanged(): LocalDate{

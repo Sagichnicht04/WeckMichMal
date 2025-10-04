@@ -186,6 +186,21 @@ data class Core(
             gameOperations.updateCoins(coins)
         }
     }
+    override fun getLastTimeCoinsReceived():LocalDate?{
+        return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving last time coins received from database"){
+            gameOperations.getLastTimeCoinsReceived()
+        }
+    }
+    override fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error updating last time coins received."){
+            gameOperations.updateLastTimeCoinsReceived(lastTimeCoinsReceived)
+        }
+    }
+    override fun gameEventAlarmRinging(){
+        exceptionHandler.runWithUnexpectedExceptionHandler("Error calling Ring Event."){
+            gameOperations.alarmRinging()
+        }
+    }
     override fun getLastConfigurationChanged(): LocalDate?{
         return exceptionHandler.runWithUnexpectedExceptionHandler("Error retrieving last configuration changed from database"){
             gameOperations.getLastConfigurationChanged()

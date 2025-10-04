@@ -42,6 +42,7 @@ class AlarmEvent : BroadcastReceiver() {
         core.log(Logger.Level.SEVERE, "I rang hehe! UID: ${configurationWithEvent.configuration.uid}")
 
         thread {
+            core.gameEventAlarmRinging()
             core.updateConfigurationIchHabGeringt(LocalDate.now(), configurationWithEvent.configuration.uid)
             core.runUpdateLogic()
         }

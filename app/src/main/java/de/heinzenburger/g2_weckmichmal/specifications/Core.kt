@@ -171,4 +171,7 @@ interface CoreSpecification {
     fun updateGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime)
     fun getShoppingList(): GameEntity.ShoppingEntity?
     fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity)
+    fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate)
+    fun getLastTimeCoinsReceived(): LocalDate?
+    fun gameEventAlarmRinging()
 }
