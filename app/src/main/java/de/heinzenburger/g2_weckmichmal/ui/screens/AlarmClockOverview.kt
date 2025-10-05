@@ -67,7 +67,7 @@ class AlarmClockOverviewScreen : ComponentActivity(){
     private lateinit var context : Context
 
     private var aPlatypus = true //Variable to set Platypus mode
-    private var coins = mutableIntStateOf(2000)
+    private var coins = mutableIntStateOf(5000)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
