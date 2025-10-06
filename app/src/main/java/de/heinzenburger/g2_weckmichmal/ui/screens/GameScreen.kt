@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -51,9 +53,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.xr.compose.testing.toDp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -73,7 +80,9 @@ import kotlin.math.absoluteValue
 class GameScreen : ComponentActivity() {
     private var coins = mutableIntStateOf(0)
     var images = mutableStateListOf<android.graphics.Bitmap?>()
-    private var positions = listOf<Pair<Int,Int>>()
+    var positions = mutableStateListOf<Pair<Float,Float>>()
+
+    var aquariumState = mutableListOf<Boolean>(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,9 +96,7 @@ class GameScreen : ComponentActivity() {
             setContent {
                 val context = LocalContext.current
                 if(images.isEmpty()){
-                    thread {
-                        animate("color_0_0", context)
-                    }
+                    animate("color_0_0", context)
                 }
                 // Handle back navigation to overview screen
                 BackHandler {
@@ -109,19 +116,48 @@ class GameScreen : ComponentActivity() {
     }
 
     fun animate(color: String,context: Context){
-        context.assets.open("fish/$color/animation_0/0.png").use { inputStream ->
-            images.add(BitmapFactory.decodeStream(inputStream))
-        }
-        val index = images.size-1
-        for (i in 0..10){
-            Thread.sleep(3000)
+        thread{
+            context.assets.open("fish/$color/animation_0/0.png").use { inputStream ->
+                images.add(BitmapFactory.decodeStream(inputStream))
+            }
+            positions.add(Pair(0f,0f))
+            val index = images.size-1
             val random = Random()
-            val animation = "animation_${random.nextInt(8)}"
-            for(i in 0..3) {
-                context.assets.open("fish/$color/$animation/$i.png").use { inputStream ->
-                    images[index] = BitmapFactory.decodeStream(inputStream)
+
+            while (true){
+                val newPositions = mutableListOf<Float>()
+                newPositions.add(positions[index].first)
+                newPositions.add(positions[index].second)
+                for(i in 0..1){
+                    newPositions[i] = if(newPositions[i]<-0.69f){
+                        newPositions[i] + (random.nextFloat() * 0.2f + 0.2f)
+                    } else if(newPositions[i]>0.69f){
+                        newPositions[i] - (random.nextFloat() * 0.2f + 0.2f)
+                    } else if(newPositions[i]>0){
+                        if(random.nextInt(10) > 8){
+                            newPositions[i] + (random.nextFloat() * 0.2f + 0.1f)
+                        } else{
+                            newPositions[i] - (random.nextFloat() * 0.2f + 0.5f)
+                        }
+                    } else {
+                        if(random.nextInt(10) > 8){
+                            newPositions[i] - (random.nextFloat() * 0.2f + 0.1f)
+                        } else{
+                            newPositions[i] + (random.nextFloat() * 0.2f + 0.5f)
+                        }
+                    }
                 }
-                Thread.sleep(500)
+                positions[index] = Pair(newPositions.first(), newPositions.last())
+
+                val animation = "animation_${random.nextInt(8)}"
+                for(j in 0 .. 3){
+                    for(i in 0..3) {
+                        context.assets.open("fish/$color/$animation/$i.png").use { inputStream ->
+                            images[index] = BitmapFactory.decodeStream(inputStream)
+                        }
+                        Thread.sleep(250)
+                    }
+                }
             }
         }
     }
@@ -149,33 +185,87 @@ class GameScreen : ComponentActivity() {
             Box(
                 modifier = Modifier.fillMaxWidth()
             ){
-                var target by remember { mutableFloatStateOf(0f) }
-                val animatedXPercent by animateFloatAsState(
-                    targetValue = target,
-                )
                 Image(
                     modifier = Modifier.fillMaxWidth(),
                     painter = rememberDrawablePainter(
                         drawable = getDrawable(
                             LocalContext.current,
-                            R.drawable.aquarium
+                            if(aquariumState.first()){
+                                    R.drawable.aquarium
+                                }
+                                else{
+                                    R.drawable.aquariumoff
+                                }
                         )
                     ),
                     contentDescription = "Loading animation",
                     contentScale = ContentScale.FillWidth,
                 )
-                images.forEach { image ->
+                Box(
+                    modifier = Modifier
+                        .align(alignment = BiasAlignment(0f,-0.75f))
+                        .background(Color(60,138,200))
+                        .border(2.dp, color = Color(59,56,164))
+                ){
+                    Text(
+                        text = "08:30",
+                        color = Color(59,56,164),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(4.dp, 2.dp),
+                        fontFamily = FontFamily(Font(R.font.digital))
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .align(alignment = BiasAlignment(0f,-0.95f))
+                        .size(50.dp,15.dp)
+                        .clickable(
+                            indication = LocalIndication.current,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            aquariumState[0] = !aquariumState.first()
+                        }
+                )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .align(alignment = BiasAlignment(0f,0.85f))
+                        .background(Color(201,201,201))
+                        .border(2.dp, color = Color(130,130,130), shape=RoundedCornerShape(8.dp))
+                ){
+                    Text(
+                        text = "DHBW",
+                        fontSize = 15.sp,
+                        color = Color(130,130,130),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(6.dp, 1.dp),
+                    )
+                }
+                images.forEachIndexed { index, image ->
                     if(image != null) {
+                        val animatedXPosition by animateFloatAsState(
+                            targetValue = positions[index].first,
+                            animationSpec = tween(
+                                durationMillis = 4000,
+                                easing = LinearEasing
+                            ),
+                        )
+                        val animatedYPosition by animateFloatAsState(
+                            targetValue = positions[index].second,
+                            animationSpec = tween(
+                                durationMillis = 4000,
+                                easing = LinearEasing
+                            ),
+                        )
                         Image(
                             bitmap = image.asImageBitmap(),
                             contentDescription = "Fish",
                             modifier = Modifier
-                                .align(BiasAlignment(animatedXPercent, 0.25f))
+                                .align(BiasAlignment(animatedXPosition, animatedYPosition))
                                 .clickable(
                                     indication = LocalIndication.current,
                                     interactionSource = remember { MutableInteractionSource() }
                                 ) {
-                                    target = -1f
                                 }
                             ,
                             contentScale = ContentScale.Fit,
@@ -214,6 +304,7 @@ fun GameScreenPreview() {
     G2_WeckMichMalTheme {
         LocalContext.current.assets.open("fish/color_0_0/animation_0/0.png").use { inputStream ->
             gameScreen.images.add(BitmapFactory.decodeStream(inputStream))
+            gameScreen.positions.add(Pair(0f,0f))
         }
         gameScreen.GameComposable(modifier = Modifier, MockupCore())
     }
