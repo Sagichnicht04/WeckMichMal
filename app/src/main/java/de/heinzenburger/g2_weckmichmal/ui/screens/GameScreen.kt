@@ -8,12 +8,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -25,9 +36,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -38,6 +55,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getDrawable
+import androidx.xr.compose.testing.toDp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import de.heinzenburger.g2_weckmichmal.R
 import de.heinzenburger.g2_weckmichmal.core.Core
@@ -49,12 +67,14 @@ import de.heinzenburger.g2_weckmichmal.ui.components.NavBar
 import de.heinzenburger.g2_weckmichmal.ui.theme.G2_WeckMichMalTheme
 import java.util.Random
 import kotlin.concurrent.thread
+import kotlin.math.absoluteValue
 
 // Main Activity for the Settings screen
 class GameScreen : ComponentActivity() {
     private var coins = mutableIntStateOf(0)
-    private var images = mutableStateListOf<android.graphics.Bitmap?>()
-    private var positions = mutableStateListOf<Pair<Int,Int>>()
+    var images = mutableStateListOf<android.graphics.Bitmap?>()
+    private var positions = listOf<Pair<Int,Int>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -73,6 +93,7 @@ class GameScreen : ComponentActivity() {
                 }
                 // Handle back navigation to overview screen
                 BackHandler {
+
                     //Go to Overview Screen without animation
                     val intent = Intent(context, AlarmClockOverviewScreen::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
@@ -80,6 +101,7 @@ class GameScreen : ComponentActivity() {
                     finish()
                 }
                 G2_WeckMichMalTheme {
+
                     GameComposable(modifier = Modifier, core)
                 }
             }
@@ -117,22 +139,51 @@ class GameScreen : ComponentActivity() {
             Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(top=48.dp,start=8.dp,end=8.dp)
-                .background(MaterialTheme.colorScheme.background)) {
+                .background(MaterialTheme.colorScheme.background)
+        ) {
             OurText(
                 text = "Belohnungen: " + coins.intValue.toString(),
                 modifier = Modifier.padding(bottom = 16.dp),
             )
-            Image(
-                modifier = Modifier.fillMaxWidth(),
-                painter = rememberDrawablePainter(
-                    drawable = getDrawable(
-                        LocalContext.current,
-                        R.drawable.aquarium
-                    )
-                ),
-                contentDescription = "Loading animation",
-                contentScale = ContentScale.FillWidth,
-            )
+
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ){
+                var target by remember { mutableFloatStateOf(0f) }
+                val animatedXPercent by animateFloatAsState(
+                    targetValue = target,
+                )
+                Image(
+                    modifier = Modifier.fillMaxWidth(),
+                    painter = rememberDrawablePainter(
+                        drawable = getDrawable(
+                            LocalContext.current,
+                            R.drawable.aquarium
+                        )
+                    ),
+                    contentDescription = "Loading animation",
+                    contentScale = ContentScale.FillWidth,
+                )
+                images.forEach { image ->
+                    if(image != null) {
+                        Image(
+                            bitmap = image.asImageBitmap(),
+                            contentDescription = "Fish",
+                            modifier = Modifier
+                                .align(BiasAlignment(animatedXPercent, 0.25f))
+                                .clickable(
+                                    indication = LocalIndication.current,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    target = -1f
+                                }
+                            ,
+                            contentScale = ContentScale.Fit,
+                        )
+                    }
+                }
+            }
+
             Button(
                 onClick = {
                 },
@@ -151,26 +202,19 @@ class GameScreen : ComponentActivity() {
             ) {
                 Text(text = "+", style = MaterialTheme.typography.bodyLarge)
             }
-            images.forEach { image ->
-                if(image != null) {
-                    Image(
-                        bitmap = image.asImageBitmap(),
-                        contentDescription = "Fish",
-                        modifier = Modifier,
-                        contentScale = ContentScale.Fit
-                    )
-                }
-            }
         }
     }
 }
 
 //Preview UI in Android Studio
-@Preview(name = "NEXUS_7", device = Devices.NEXUS_7)
+@Preview(name = "NEXUS_7", device = Devices.NEXUS_6P)
 @Composable
 fun GameScreenPreview() {
     val gameScreen = GameScreen()
     G2_WeckMichMalTheme {
+        LocalContext.current.assets.open("fish/color_0_0/animation_0/0.png").use { inputStream ->
+            gameScreen.images.add(BitmapFactory.decodeStream(inputStream))
+        }
         gameScreen.GameComposable(modifier = Modifier, MockupCore())
     }
 }
