@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
@@ -56,10 +57,12 @@ import de.heinzenburger.g2_weckmichmal.R
 import de.heinzenburger.g2_weckmichmal.core.Core
 import de.heinzenburger.g2_weckmichmal.core.ExceptionHandler
 import de.heinzenburger.g2_weckmichmal.core.MockupCore
+import de.heinzenburger.g2_weckmichmal.specifications.ConfigurationWithEvent
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurText
 import de.heinzenburger.g2_weckmichmal.ui.components.NavBar
 import de.heinzenburger.g2_weckmichmal.ui.theme.G2_WeckMichMalTheme
+import java.time.format.DateTimeFormatter
 import java.util.Random
 import kotlin.concurrent.thread
 
@@ -69,7 +72,9 @@ class GameScreen : ComponentActivity() {
     var images = mutableStateListOf<android.graphics.Bitmap?>()
     var positions = mutableStateListOf<Pair<Float,Float>>()
 
-    var aquariumState = mutableListOf<Boolean>(true)
+    var aquariumState = mutableListOf<Boolean>()
+
+    var configurationWithEvents = mutableStateOf<List<ConfigurationWithEvent>?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,12 +84,15 @@ class GameScreen : ComponentActivity() {
             // Load courses and excluded courses in a background thread
             thread {
                 coins.intValue = core.getCoins() ?: 0
+                configurationWithEvents = mutableStateOf(core.getAllConfigurationAndEvent())
+                configurationWithEvents.value?.forEachIndexed { index, configurationWithEvent ->
+                    aquariumState.add(configurationWithEvent.configuration.isActive)
+                    animate("color_0_0", applicationContext, index)
+                }
             }
             setContent {
                 val context = LocalContext.current
-                if(images.isEmpty()){
-                    animate("color_0_0", context)
-                }
+
                 // Handle back navigation to overview screen
                 BackHandler {
 
@@ -102,13 +110,14 @@ class GameScreen : ComponentActivity() {
         }
     }
 
-    fun animate(color: String,context: Context){
+
+
+    fun animate(color: String,context: Context, index: Int){
         thread{
             context.assets.open("fish/$color/animation_0/0.png").use { inputStream ->
                 images.add(BitmapFactory.decodeStream(inputStream))
             }
             positions.add(Pair(0f,0f))
-            val index = images.size-1
             val random = Random()
 
             while (true){
@@ -165,100 +174,13 @@ class GameScreen : ComponentActivity() {
                 .background(MaterialTheme.colorScheme.background)
         ) {
             OurText(
-                text = "Belohnungen: " + coins.intValue.toString(),
+                text = "Belohnungen: " + configurationWithEvents.value?.size,
+//                text = "Belohnungen: " + coins.intValue.toString(),
                 modifier = Modifier.padding(bottom = 16.dp),
             )
 
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Image(
-                    modifier = Modifier.fillMaxWidth(),
-                    painter = rememberDrawablePainter(
-                        drawable = getDrawable(
-                            LocalContext.current,
-                            if(aquariumState.first()){
-                                    R.drawable.aquarium
-                                }
-                                else{
-                                    R.drawable.aquariumoff
-                                }
-                        )
-                    ),
-                    contentDescription = "Loading animation",
-                    contentScale = ContentScale.FillWidth,
-                )
-                Box(
-                    modifier = Modifier
-                        .align(alignment = BiasAlignment(0f,-0.75f))
-                        .background(Color(60,138,200))
-                        .border(2.dp, color = Color(59,56,164))
-                ){
-                    Text(
-                        text = "08:30",
-                        color = Color(59,56,164),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(4.dp, 2.dp),
-                        fontFamily = FontFamily(Font(R.font.digital))
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .align(alignment = BiasAlignment(0f,-0.95f))
-                        .size(50.dp,15.dp)
-                        .clickable(
-                            indication = LocalIndication.current,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            aquariumState[0] = !aquariumState.first()
-                        }
-                )
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .align(alignment = BiasAlignment(0f,0.85f))
-                        .background(Color(201,201,201))
-                        .border(2.dp, color = Color(130,130,130), shape=RoundedCornerShape(8.dp))
-                ){
-                    Text(
-                        text = "DHBW",
-                        fontSize = 15.sp,
-                        color = Color(130,130,130),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(6.dp, 1.dp),
-                    )
-                }
-                images.forEachIndexed { index, image ->
-                    if(image != null) {
-                        val animatedXPosition by animateFloatAsState(
-                            targetValue = positions[index].first,
-                            animationSpec = tween(
-                                durationMillis = 4000,
-                                easing = LinearEasing
-                            ),
-                        )
-                        val animatedYPosition by animateFloatAsState(
-                            targetValue = positions[index].second,
-                            animationSpec = tween(
-                                durationMillis = 4000,
-                                easing = LinearEasing
-                            ),
-                        )
-                        Image(
-                            bitmap = image.asImageBitmap(),
-                            contentDescription = "Fish",
-                            modifier = Modifier
-                                .align(BiasAlignment(animatedXPosition, animatedYPosition))
-                                .clickable(
-                                    indication = LocalIndication.current,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                }
-                            ,
-                            contentScale = ContentScale.Fit,
-                        )
-                    }
-                }
+            configurationWithEvents.value?.forEachIndexed { index, configurationWithEvent ->
+                Aquarium(configurationWithEvent, core , index)
             }
 
             Button(
@@ -281,18 +203,119 @@ class GameScreen : ComponentActivity() {
             }
         }
     }
-}
 
-//Preview UI in Android Studio
-@Preview(name = "NEXUS_7", device = Devices.NEXUS_6P)
-@Composable
-fun GameScreenPreview() {
-    val gameScreen = GameScreen()
-    G2_WeckMichMalTheme {
-        LocalContext.current.assets.open("fish/color_0_0/animation_0/0.png").use { inputStream ->
-            gameScreen.images.add(BitmapFactory.decodeStream(inputStream))
-            gameScreen.positions.add(Pair(0f,0f))
+
+    @Composable
+    fun Aquarium(configurationWithEvent: ConfigurationWithEvent, core: CoreSpecification, aquariumIndex: Int){
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ){
+            Image(
+                modifier = Modifier.fillMaxWidth(),
+                painter = rememberDrawablePainter(
+                    drawable = getDrawable(
+                        LocalContext.current,
+                        if(aquariumState.get(aquariumIndex)){
+                            R.drawable.aquarium
+                        }
+                        else{
+                            R.drawable.aquariumoff
+                        }
+                    )
+                ),
+                contentDescription = "Loading animation",
+                contentScale = ContentScale.FillWidth,
+            )
+            Box(
+                modifier = Modifier
+                    .align(alignment = BiasAlignment(0f,-0.75f))
+                    .background(Color(60,138,200))
+                    .border(2.dp, color = Color(59,56,164))
+            ){
+                Text(
+                    text = "${configurationWithEvent.event?.wakeUpTime?.format(DateTimeFormatter.ofPattern("HH:mm"))}",
+                    color = Color(59,56,164),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(4.dp, 2.dp),
+                    fontFamily = FontFamily(Font(R.font.digital))
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .align(alignment = BiasAlignment(0f,-0.95f))
+                    .size(50.dp,15.dp)
+                    .clickable(
+                        indication = LocalIndication.current,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        aquariumState[aquariumIndex] = !aquariumState[aquariumIndex]
+                        configurationWithEvent.configuration.isActive = !configurationWithEvent.configuration.isActive
+                    }
+            )
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .align(alignment = BiasAlignment(0f,0.85f))
+                    .background(Color(201,201,201))
+                    .border(2.dp, color = Color(130,130,130), shape=RoundedCornerShape(8.dp))
+            ){
+                Text(
+                    text = configurationWithEvent.configuration.name,
+                    fontSize = 15.sp,
+                    color = Color(130,130,130),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(6.dp, 1.dp),
+                )
+            }
+            val image = images[aquariumIndex]
+            if(image != null) {
+                val animatedXPosition by animateFloatAsState(
+                    targetValue = positions[aquariumIndex].first,
+                    animationSpec = tween(
+                        durationMillis = 4000,
+                        easing = LinearEasing
+                    ),
+                )
+                val animatedYPosition by animateFloatAsState(
+                    targetValue = positions[aquariumIndex].second,
+                    animationSpec = tween(
+                        durationMillis = 4000,
+                        easing = LinearEasing
+                    ),
+                )
+                Image(
+                    bitmap = image.asImageBitmap(),
+                    contentDescription = "Fish",
+                    modifier = Modifier
+                        .align(BiasAlignment(animatedXPosition, animatedYPosition))
+                        .clickable(
+                            indication = LocalIndication.current,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                        }
+                    ,
+                    contentScale = ContentScale.Fit,
+                )
+            }
         }
-        gameScreen.GameComposable(modifier = Modifier, MockupCore())
+    }
+    //Preview UI in Android Studio
+    @Preview(name = "NEXUS_7", device = Devices.NEXUS_6P)
+    @Composable
+    fun GameScreenPreview() {
+        val gameScreen = GameScreen()
+        val core = MockupCore()
+        thread{
+            configurationWithEvents = mutableStateOf(core.getAllConfigurationAndEvent())
+        }
+        G2_WeckMichMalTheme {
+            LocalContext.current.assets.open("fish/color_0_0/animation_0/0.png").use { inputStream ->
+                gameScreen.images.add(BitmapFactory.decodeStream(inputStream))
+                gameScreen.positions.add(Pair(0f,0f))
+            }
+            gameScreen.GameComposable(modifier = Modifier, core)
+        }
     }
 }
+
+

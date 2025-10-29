@@ -63,7 +63,7 @@ class MockupCore : CoreSpecification {
         val mockupEvents = listOf(
             Event(
                 configID = 123,
-                wakeUpTime = LocalTime.of(8,30),
+                wakeUpTime = LocalTime.of(8,45),
                 days = setOf(DayOfWeek.MONDAY, DayOfWeek.THURSDAY),
                 date = LocalDate.of(2024,10,1),
                 courses = listOf(
