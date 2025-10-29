@@ -167,7 +167,6 @@ class InformationScreen : ComponentActivity() {
     @Composable
     fun InformationComposable(modifier: Modifier) {
         NavBar.Companion.NavigationBar(
-            modifier,
             core,
             innerInformationComposable,
             caller = InformationScreen::class

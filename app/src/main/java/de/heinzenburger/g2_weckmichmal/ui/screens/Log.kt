@@ -163,7 +163,6 @@ class LogScreen : ComponentActivity() {
     @Composable
     fun LogComposable(modifier: Modifier, core: CoreSpecification) {
         NavBar.Companion.NavigationBar(
-            modifier,
             core,
             innerLogComposable,
             caller = SettingsScreen::class

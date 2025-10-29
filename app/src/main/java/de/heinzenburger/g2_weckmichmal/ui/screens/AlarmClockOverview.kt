@@ -426,7 +426,8 @@ class AlarmClockOverviewScreen : ComponentActivity(){
     // Entry point composable for the screen, wrapped with navigation bar
     @Composable
     fun AlarmClockOverviewComposable(modifier: Modifier, core: CoreSpecification) {
-        NavBar.Companion.NavigationBar(modifier, core, innerAlarmClockOverviewComposable,
+        NavBar.Companion.NavigationBar(
+            core, innerAlarmClockOverviewComposable,
             AlarmClockOverviewScreen::class)
     }
 

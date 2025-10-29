@@ -94,7 +94,7 @@ class SettingsScreen : ComponentActivity() {
     // Wrapper function for the Settings Composable with NavBar
     @Composable
     fun SettingsComposable(modifier: Modifier, uiActions: CoreSpecification) {
-        NavBar.Companion.NavigationBar(modifier, uiActions, innerSettingsComposable, SettingsScreen::class)
+        NavBar.Companion.NavigationBar(uiActions, innerSettingsComposable, SettingsScreen::class)
     }
 
     private var url = mutableStateOf("https://")
