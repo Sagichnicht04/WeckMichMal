@@ -5,20 +5,24 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class StudierendenWerkKarlsruheTest {
-    @Test
+    val today = LocalDate.now().dayOfWeek
+    val blacklistedDaysOfWeek = listOf(DayOfWeek.THURSDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+
+    @Test()
     fun `nextMeals is not empty`() {
-        if(LocalDate.now().dayOfWeek != DayOfWeek.SATURDAY && LocalDate.now().dayOfWeek != DayOfWeek.SUNDAY){
-            val mensaFetcher = StudierendenWerkKarlsruhe()
-            val meals = mensaFetcher.nextMeals()
-            assert(meals.isNotEmpty()) { "Expected non-empty HTML response from Mensa page" }
-        }
+        if (blacklistedDaysOfWeek.contains(today)) return
+
+        val mensaFetcher = StudierendenWerkKarlsruhe()
+        val meals = mensaFetcher.nextMeals()
+        assert(meals.isNotEmpty()) { "Expected non-empty HTML response from Mensa page" }
     }
 
-    @Test
+    @Test()
     fun `nextMeals has at least one price`() {
-        if(LocalDate.now().dayOfWeek != DayOfWeek.SATURDAY && LocalDate.now().dayOfWeek != DayOfWeek.SUNDAY){val mensaFetcher = StudierendenWerkKarlsruhe()
-            val meals = mensaFetcher.nextMeals()
-            assert(meals.any {it.price > 0}) { "Expected at least one meal with a price greater than 0"}
-        }
+        if (blacklistedDaysOfWeek.contains(today)) return
+
+        val mensaFetcher = StudierendenWerkKarlsruhe()
+        val meals = mensaFetcher.nextMeals()
+        assert(meals.any { it.price > 0 }) { "Expected at least one meal with a price greater than 0" }
     }
 }
