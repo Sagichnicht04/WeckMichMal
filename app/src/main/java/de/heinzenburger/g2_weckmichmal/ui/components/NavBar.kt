@@ -24,6 +24,8 @@ import de.heinzenburger.g2_weckmichmal.ui.screens.GameScreen
 import de.heinzenburger.g2_weckmichmal.ui.screens.InformationScreen
 import de.heinzenburger.g2_weckmichmal.ui.screens.SettingsScreen
 import de.heinzenburger.g2_weckmichmal.persistence.Logger
+import de.heinzenburger.g2_weckmichmal.ui.game.BetterGameScreen
+
 class NavBar : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,15 +75,15 @@ class NavBar : ComponentActivity() {
                                     tint = if(caller == AlarmClockOverviewScreen::class || caller == AlarmClockEditScreen::class){iconSelectedColor}else{iconColor},
                                     )
                             }
-                            if(caller == GameScreen::class || core.getIsGameMode() == true){
+                            if(caller == BetterGameScreen::class || core.getIsGameMode() == true){
                                 IconButton(onClick = {
-                                    switchActivity(context, GameScreen::class.java)
+                                    switchActivity(context, BetterGameScreen::class.java)
                                 }, Modifier.size(90.dp)) {
                                     Icon(
                                         Icons.Filled.SportsEsports,
                                         contentDescription = "Game Icon",
                                         Modifier.size(iconSize),
-                                        tint = if(caller == GameScreen::class){iconSelectedColor}else{iconColor},
+                                        tint = if(caller == BetterGameScreen::class){iconSelectedColor}else{iconColor},
                                     )
                                 }
                             }

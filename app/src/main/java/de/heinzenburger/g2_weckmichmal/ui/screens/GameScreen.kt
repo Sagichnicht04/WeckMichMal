@@ -61,10 +61,13 @@ import de.heinzenburger.g2_weckmichmal.specifications.ConfigurationWithEvent
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurText
 import de.heinzenburger.g2_weckmichmal.ui.components.NavBar
+import de.heinzenburger.g2_weckmichmal.ui.models.GameScreenModel
 import de.heinzenburger.g2_weckmichmal.ui.theme.G2_WeckMichMalTheme
 import java.time.format.DateTimeFormatter
 import java.util.Random
 import kotlin.concurrent.thread
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlin.text.set
 
 // Main Activity for the Settings screen
 class GameScreen : ComponentActivity() {
@@ -109,7 +112,6 @@ class GameScreen : ComponentActivity() {
             }
         }
     }
-
 
 
     fun animate(color: String,context: Context, index: Int){
@@ -166,6 +168,8 @@ class GameScreen : ComponentActivity() {
 
     //Main component
     val innerGameComposable : @Composable (PaddingValues, CoreSpecification) -> Unit = { innerPadding: PaddingValues, core: CoreSpecification ->
+        val viewModel = viewModel<GameScreenModel>()
+        viewModel.initialize(LocalContext.current, true)
 
         Column(
             Modifier
@@ -300,7 +304,7 @@ class GameScreen : ComponentActivity() {
         }
     }
     //Preview UI in Android Studio
-    @Preview(name = "NEXUS_7", device = Devices.NEXUS_6P)
+    @Preview()
     @Composable
     fun GameScreenPreview() {
         val gameScreen = GameScreen()

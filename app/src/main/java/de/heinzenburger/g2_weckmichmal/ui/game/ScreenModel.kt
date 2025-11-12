@@ -1,0 +1,70 @@
+package de.heinzenburger.g2_weckmichmal.ui.game
+
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.activity.ComponentActivity
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.ViewModel
+import de.heinzenburger.g2_weckmichmal.core.Core
+import de.heinzenburger.g2_weckmichmal.specifications.Configuration
+import de.heinzenburger.g2_weckmichmal.specifications.ConfigurationWithEvent
+import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
+import de.heinzenburger.g2_weckmichmal.ui.screens.AlarmClockEditScreen
+import kotlin.concurrent.thread
+
+class ScreenModel : ViewModel(){
+    private lateinit var core: CoreSpecification
+    var configurations = mutableStateListOf<ConfigurationWithEvent>()
+    var coins = mutableIntStateOf(0)
+
+    fun setEditScreen(context: Context, configuration: Configuration?){
+        val core = Core(context)
+        val intent = Intent(context, AlarmClockEditScreen::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        intent.putExtra("defaultAlarmValues", core.getDefaultAlarmValues())
+        intent.putExtra("configuration", configuration)
+        context.startActivity(intent)
+        (context as ComponentActivity).finish()
+    }
+
+    fun loadAquariumAnimations(context: Context, color: String): List<List<Bitmap>> {
+        val result = mutableListOf<MutableList<Bitmap>>()
+        for(animation in 0 .. 7){
+            result.add(mutableListOf())
+            for(i in 0..3) {
+                context.assets.open("fish/$color/animation_$animation/$i.png").use { inputStream ->
+                     result[animation].add(BitmapFactory.decodeStream(inputStream))
+                }
+            }
+        }
+        return result
+    }
+
+    fun updateConfigurationActive(isConfigurationActive: Boolean, configuration: Configuration){
+        thread{
+            core.updateConfigurationActive(isConfigurationActive, configuration)
+        }
+    }
+    private fun loadConfigurations() {
+        thread{
+            configurations.removeAll(configurations)
+            core.getAllConfigurationAndEvent()?.forEach { config ->
+                configurations.add(config)
+            }
+        }
+    }
+    private fun loadCoins() {
+        thread{
+            coins.intValue = core.getCoins() ?: 0
+        }
+    }
+
+    fun initialize(core: CoreSpecification) {
+        this.core = core
+        loadConfigurations()
+        loadCoins()
+    }
+}

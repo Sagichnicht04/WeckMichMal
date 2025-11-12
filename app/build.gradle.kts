@@ -57,6 +57,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.testing)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -94,6 +96,7 @@ dependencies {
     // for JSON parsing
     testImplementation(libs.json)
     implementation(libs.gson)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 
 
