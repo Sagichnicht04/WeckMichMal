@@ -67,6 +67,7 @@ import de.heinzenburger.g2_weckmichmal.ui.theme.G2_WeckMichMalTheme
 import java.time.format.DateTimeFormatter
 import java.util.Random
 import androidx.lifecycle.viewmodel.compose.viewModel
+import de.heinzenburger.g2_weckmichmal.ui.game.Pets.Companion.Fish
 import de.heinzenburger.g2_weckmichmal.ui.screens.AlarmClockOverviewScreen
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -156,80 +157,12 @@ class BetterGameScreen : ComponentActivity() {
         ){
             EmptyAquarium(configurationWithEvent, onEnter, onConfigurationActiveUpdate)
             Fish(animations)
+            Fish(animations)
+            Fish(animations)
         }
     }
 
-    @Composable
-    fun Fish(animations: List<List<Bitmap>>){
-        Box(
-            modifier = Modifier.fillMaxSize().height(100.dp)
-        ) {
-            var position by remember { mutableStateOf(Pair(0f, 0f)) }
-            var currentImage by remember { mutableStateOf(animations[0][0]) }
-            val animatedXPosition by animateFloatAsState(
-                targetValue = position.first,
-                animationSpec = tween(
-                    durationMillis = 4000,
-                    easing = LinearEasing
-                ),
-            )
-            val animatedYPosition by animateFloatAsState(
-                targetValue = position.second,
-                animationSpec = tween(
-                    durationMillis = 4000,
-                    easing = LinearEasing
-                ),
-            )
-            Image(
-                bitmap = currentImage.asImageBitmap(),
-                contentDescription = "Fish",
-                modifier = Modifier
-                    .align(BiasAlignment(animatedXPosition, animatedYPosition))
-                    .clickable(
-                        indication = LocalIndication.current,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                    },
-                contentScale = ContentScale.Fit,
-            )
 
-            LaunchedEffect(Unit) {
-                val random = Random()
-
-                while (true) {
-                    val newPosition = position.toList().toMutableList()
-                    for (i in 0..1) {
-                        newPosition[i] = if (newPosition[i] < -0.69f) {
-                            newPosition[i] + (random.nextFloat() * 0.2f + 0.2f)
-                        } else if (newPosition[i] > 0.69f) {
-                            newPosition[i] - (random.nextFloat() * 0.2f + 0.2f)
-                        } else if (newPosition[i] > 0) {
-                            if (random.nextInt(10) > 8) {
-                                newPosition[i] + (random.nextFloat() * 0.2f + 0.1f)
-                            } else {
-                                newPosition[i] - (random.nextFloat() * 0.2f + 0.5f)
-                            }
-                        } else {
-                            if (random.nextInt(10) > 8) {
-                                newPosition[i] - (random.nextFloat() * 0.2f + 0.1f)
-                            } else {
-                                newPosition[i] + (random.nextFloat() * 0.2f + 0.5f)
-                            }
-                        }
-                    }
-                    position = Pair(newPosition.first(), newPosition.last())
-
-                    val animation = random.nextInt(8)
-
-                    for (i in 0..3) {
-                        currentImage = animations[animation][i]
-                        delay(250L)
-                    }
-                    delay((random.nextInt(15) + 3).seconds)
-                }
-            }
-        }
-    }
 
     @Composable
     fun EmptyAquarium(configurationWithEvent: ConfigurationWithEvent,
