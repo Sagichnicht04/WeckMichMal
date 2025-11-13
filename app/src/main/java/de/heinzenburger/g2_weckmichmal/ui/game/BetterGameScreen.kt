@@ -159,6 +159,15 @@ class BetterGameScreen : ComponentActivity() {
             Fish(animations)
             Fish(animations)
             Fish(animations)
+            Fish(animations)
+            Fish(animations)
+            Fish(animations)
+            Fish(animations)
+            Fish(animations)
+            Fish(animations)
+            Fish(animations)
+            Fish(animations)
+            Fish(animations)
         }
     }
 

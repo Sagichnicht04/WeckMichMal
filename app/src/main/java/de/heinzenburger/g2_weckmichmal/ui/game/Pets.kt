@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -30,13 +31,15 @@ class Pets {
     companion object {
         @Composable
         fun Fish(animations: List<List<Bitmap>>) {
+            val random = Random()
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .height(100.dp)
+                    .height(150.dp)
             ) {
-                var position by remember { mutableStateOf(Pair(0f, 0f)) }
+                var position by remember { mutableStateOf(Pair(random.nextInt(100)/100f -0.5f, random.nextInt(100)/100f -0.5f)) }
                 var currentImage by remember { mutableStateOf(animations[0][0]) }
+                var isLookingLeft by remember { mutableStateOf(true) }
                 val animatedXPosition by animateFloatAsState(
                     targetValue = position.first,
                     animationSpec = tween(
@@ -60,13 +63,14 @@ class Pets {
                             indication = LocalIndication.current,
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
-                        },
+                        }
+                        .graphicsLayer(
+                            scaleX = if (isLookingLeft){1f} else {-1f}
+                        ),
                     contentScale = ContentScale.Fit,
                 )
 
                 LaunchedEffect(Unit) {
-                    val random = Random()
-
                     while (true) {
 
                         if(random.nextInt(5)>2) {
@@ -90,6 +94,7 @@ class Pets {
                                     }
                                 }
                             }
+                            isLookingLeft = newPosition.first() < position.first
                             position = Pair(newPosition.first(), newPosition.last())
 
                             for (j in 0..3) {
@@ -107,11 +112,9 @@ class Pets {
                             }
                         }
 
-                        for(j in 0..random.nextInt(5)){
-                            for (i in 0..3) {
-                                currentImage = animations[0][i]
+                        for(j in 0..random.nextInt(10) + 3){
+                                currentImage = animations[0][j%4]
                                 delay(250L)
-                            }
                         }
                     }
                 }
