@@ -423,7 +423,7 @@ data class GameEntity(
         var boughtFish: MutableList<Fish> = mutableListOf()
     ){
         data class Fish(
-            var color: String,
+            var color: Int,
         ){
             companion object{
                 const val PRICE = 3

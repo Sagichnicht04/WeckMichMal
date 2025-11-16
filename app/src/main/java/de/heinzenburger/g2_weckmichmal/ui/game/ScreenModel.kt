@@ -23,6 +23,8 @@ class ScreenModel : ViewModel(){
     var configurations = mutableStateListOf<ConfigurationWithEvent>()
     var coins = mutableIntStateOf(0)
     var openShop by mutableStateOf(false)
+
+    var boughtFish = mutableStateListOf<Int>()
     fun setEditScreen(context: Context, configuration: Configuration?){
         val core = Core(context)
         val intent = Intent(context, AlarmClockEditScreen::class.java)
@@ -50,6 +52,23 @@ class ScreenModel : ViewModel(){
         return result
     }
 
+    fun buyFish(color: Int){
+        thread{
+            boughtFish.add(color)
+            core.buyFish(color)
+            loadCoins()
+        }
+    }
+
+    fun loadBoughtFish(){
+        thread {
+            val shoppingEntity = core.getShoppingList()
+            shoppingEntity?.boughtFish?.forEach {
+                boughtFish.add(it.color)
+            }
+        }
+    }
+
     fun updateConfigurationActive(isConfigurationActive: Boolean, configuration: Configuration){
         thread{
             core.updateConfigurationActive(isConfigurationActive, configuration)
@@ -63,7 +82,7 @@ class ScreenModel : ViewModel(){
             }
         }
     }
-    fun loadCoins() {
+    private fun loadCoins() {
         thread{
             coins.intValue = core.getCoins() ?: 0
         }
@@ -73,5 +92,6 @@ class ScreenModel : ViewModel(){
         this.core = core
         loadConfigurations()
         loadCoins()
+        loadBoughtFish()
     }
 }

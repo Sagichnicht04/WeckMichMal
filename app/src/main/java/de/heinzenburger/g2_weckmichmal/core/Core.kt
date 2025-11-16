@@ -242,7 +242,7 @@ data class Core(
             gameOperations.updateShoppingList(shoppingEntity)
         }
     }
-    override fun buyFish(color: String){
+    override fun buyFish(color: Int){
         exceptionHandler.runWithUnexpectedExceptionHandler("Error buying fish."){
             gameOperations.buyFish(color)
         }

@@ -101,7 +101,7 @@ class GameOperations(
         core.log(Logger.Level.INFO, "Updating coins: $shoppingEntity")
     }
 
-    fun buyFish(color: String){
+    fun buyFish(color: Int){
         val coins = getCoins()
         if(GameEntity.ShoppingEntity.Fish.PRICE >= coins){
             updateCoins(coins - GameEntity.ShoppingEntity.Fish.PRICE)

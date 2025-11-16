@@ -176,7 +176,7 @@ interface CoreSpecification {
     fun getLastTimeCoinsReceived(): LocalDate?
     fun gameEventAlarmRinging()
 
-    fun buyFish(color: String)
+    fun buyFish(color: Int)
 
     companion object{
         fun getRewardForWindow(startTime: LocalTime, endTime: LocalTime): Int{

@@ -20,6 +20,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -115,14 +116,16 @@ class BetterGameScreen : ComponentActivity() {
             viewModel.openShop -> {
                 val fishImages = mutableListOf<Bitmap>()
                 animations.forEach { color ->
-                    color.forEach { animation ->
-                        fishImages.add(animation[0])
-                    }
+                    fishImages.add(color[1][0])
                 }
                 PickerDialogs.ShopDialog(
                     onDismiss = { viewModel.openShop = false },
                     coins = viewModel.coins.intValue,
                     fishImages = fishImages,
+                    onBuy = {
+                        viewModel.buyFish(it)
+                        viewModel.openShop = false
+                    }
                 )
             }
         }
@@ -133,29 +136,35 @@ class BetterGameScreen : ComponentActivity() {
                 .padding(top = 48.dp, start = 8.dp, end = 8.dp)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            OurText(
-                text = "Wbugs: " + viewModel.coins.intValue,
-//                text = "Belohnungen: " + coins.intValue.toString(),
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ){
+                OurText(
+                    text = "WBugs: " + viewModel.coins.intValue,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
 
-            Icon(
-                Icons.Filled.Shop,
-                contentDescription = "Game Icon",
-                tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable(
-                        indication = LocalIndication.current,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        viewModel.openShop = true
-                    },
-            )
+                Icon(
+                    Icons.Filled.Shop,
+                    contentDescription = "Game Icon",
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .align(BiasAlignment(1f,0f))
+                        .size(48.dp)
+                        .clickable(
+                            indication = LocalIndication.current,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            viewModel.openShop = true
+                        },
+                )
+            }
+
 
             viewModel.configurations.forEachIndexed { index, configurationWithEvent ->
                 Aquarium(configurationWithEvent,
                     animations = animations,
+                    boughtFish = viewModel.boughtFish,
                     onEnter = {viewModel.setEditScreen(context, configurationWithEvent.configuration)},
                     onConfigurationActiveUpdate = {isConfigurationActive -> viewModel.updateConfigurationActive(isConfigurationActive, configurationWithEvent.configuration)}
                 )
@@ -188,24 +197,16 @@ class BetterGameScreen : ComponentActivity() {
     @Composable
     fun Aquarium(configurationWithEvent: ConfigurationWithEvent,
                  animations: List<List<List<Bitmap>>>,
+                 boughtFish: List<Int>,
                  onEnter: () -> Unit,
                  onConfigurationActiveUpdate: (isConfigurationActive: Boolean) -> Unit){
         Box(
             modifier = Modifier.fillMaxWidth()
         ){
             EmptyAquarium(configurationWithEvent, onEnter, onConfigurationActiveUpdate)
-            Fish(animations[1])
-            Fish(animations[2])
-            Fish(animations[0])
-            Fish(animations[1])
-            Fish(animations[2])
-            Fish(animations[4])
-            Fish(animations[3])
-            Fish(animations[3])
-            Fish(animations[0])
-            Fish(animations[8])
-            Fish(animations[7])
-            Fish(animations[6])
+            boughtFish.forEach {
+                Fish(animations[it])
+            }
             AquariumComponents(configurationWithEvent)
 
         }
