@@ -308,4 +308,7 @@ class MockupCore : CoreSpecification {
 
     override fun gameEventAlarmRinging() {
     }
+
+    override fun buyFish(color: String) {
+    }
 }

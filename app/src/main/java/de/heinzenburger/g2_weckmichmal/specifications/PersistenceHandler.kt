@@ -420,8 +420,16 @@ data class GameEntity(
         return LocalTime.parse(this.goodWakeTimeEnd, DateTimeFormatter.ofPattern("HH:mm"))
     }
     data class ShoppingEntity(
-        var dummy: Boolean = false
-    )
+        var boughtFish: MutableList<Fish> = mutableListOf()
+    ){
+        data class Fish(
+            var color: String,
+        ){
+            companion object{
+                const val PRICE = 3
+            }
+        }
+    }
 }
 
 sealed class PersistenceException(message: String?, cause: Exception?) :

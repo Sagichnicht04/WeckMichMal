@@ -100,4 +100,14 @@ class GameOperations(
         gamePersistency.updateShoppingList(shoppingEntity)
         core.log(Logger.Level.INFO, "Updating coins: $shoppingEntity")
     }
+
+    fun buyFish(color: String){
+        val coins = getCoins()
+        if(GameEntity.ShoppingEntity.Fish.PRICE >= coins){
+            updateCoins(coins - GameEntity.ShoppingEntity.Fish.PRICE)
+            val shoppingEntity = getShoppingList()
+            shoppingEntity.boughtFish.add(GameEntity.ShoppingEntity.Fish(color))
+            updateShoppingList(shoppingEntity)
+        }
+    }
 }

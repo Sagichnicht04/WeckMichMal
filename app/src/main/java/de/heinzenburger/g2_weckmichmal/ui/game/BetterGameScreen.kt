@@ -20,6 +20,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,8 +29,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Shop
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -104,22 +109,53 @@ class BetterGameScreen : ComponentActivity() {
             viewModel.initialize(core)
         }
         val context = LocalContext.current
+        val animations = viewModel.loadAquariumAnimations(context)
+
+        when{
+            viewModel.openShop -> {
+                val fishImages = mutableListOf<Bitmap>()
+                animations.forEach { color ->
+                    color.forEach { animation ->
+                        fishImages.add(animation[0])
+                    }
+                }
+                PickerDialogs.ShopDialog(
+                    onDismiss = { viewModel.openShop = false },
+                    coins = viewModel.coins.intValue,
+                    fishImages = fishImages,
+                )
+            }
+        }
 
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(top=48.dp,start=8.dp,end=8.dp)
+                .padding(top = 48.dp, start = 8.dp, end = 8.dp)
                 .background(MaterialTheme.colorScheme.background)
         ) {
             OurText(
-                text = "Belohnungen: " + viewModel.coins.intValue,
+                text = "Wbugs: " + viewModel.coins.intValue,
 //                text = "Belohnungen: " + coins.intValue.toString(),
                 modifier = Modifier.padding(bottom = 16.dp),
             )
 
+            Icon(
+                Icons.Filled.Shop,
+                contentDescription = "Game Icon",
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable(
+                        indication = LocalIndication.current,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        viewModel.openShop = true
+                    },
+            )
+
             viewModel.configurations.forEachIndexed { index, configurationWithEvent ->
                 Aquarium(configurationWithEvent,
-                    animations = viewModel.loadAquariumAnimations(context, "color_0_1"),
+                    animations = animations,
                     onEnter = {viewModel.setEditScreen(context, configurationWithEvent.configuration)},
                     onConfigurationActiveUpdate = {isConfigurationActive -> viewModel.updateConfigurationActive(isConfigurationActive, configurationWithEvent.configuration)}
                 )
@@ -134,11 +170,13 @@ class BetterGameScreen : ComponentActivity() {
                 ),
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier
-                    .padding(top=16.dp)
+                    .padding(top = 16.dp)
                     .size(69.dp)
                     .align(alignment = Alignment.CenterHorizontally)
-                    .border(2.dp, Color.Transparent,
-                        RoundedCornerShape(50))
+                    .border(
+                        2.dp, Color.Transparent,
+                        RoundedCornerShape(50)
+                    )
 
             ) {
                 Text(text = "+", style = MaterialTheme.typography.bodyLarge)
@@ -149,61 +187,37 @@ class BetterGameScreen : ComponentActivity() {
 
     @Composable
     fun Aquarium(configurationWithEvent: ConfigurationWithEvent,
-                 animations: List<List<Bitmap>>,
+                 animations: List<List<List<Bitmap>>>,
                  onEnter: () -> Unit,
                  onConfigurationActiveUpdate: (isConfigurationActive: Boolean) -> Unit){
         Box(
             modifier = Modifier.fillMaxWidth()
         ){
             EmptyAquarium(configurationWithEvent, onEnter, onConfigurationActiveUpdate)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
-            Fish(animations)
+            Fish(animations[1])
+            Fish(animations[2])
+            Fish(animations[0])
+            Fish(animations[1])
+            Fish(animations[2])
+            Fish(animations[4])
+            Fish(animations[3])
+            Fish(animations[3])
+            Fish(animations[0])
+            Fish(animations[8])
+            Fish(animations[7])
+            Fish(animations[6])
+            AquariumComponents(configurationWithEvent)
+
         }
     }
 
-
-
     @Composable
-    fun EmptyAquarium(configurationWithEvent: ConfigurationWithEvent,
-                      onEnter: () -> Unit,
-                      onConfigurationActiveUpdate: (isConfigurationActive: Boolean) -> Unit){
-        var isAquariumOn by remember { mutableStateOf(configurationWithEvent.configuration.isActive) }
-
+    fun AquariumComponents(configurationWithEvent: ConfigurationWithEvent){
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .height(150.dp)
         ) {
-
-            Image(
-                modifier = Modifier.fillMaxWidth()
-                    .clickable(
-                        indication = LocalIndication.current,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        onEnter()
-                    },
-                painter = rememberDrawablePainter(
-                    drawable = getDrawable(
-                        LocalContext.current,
-                        if (isAquariumOn) {
-                            R.drawable.aquarium
-                        } else {
-                            R.drawable.aquariumoff
-                        }
-                    )
-                ),
-                contentDescription = "Loading animation",
-                contentScale = ContentScale.FillWidth,
-            )
             Box(
                 modifier = Modifier
                     .align(alignment = BiasAlignment(0f, -0.75f))
@@ -226,18 +240,6 @@ class BetterGameScreen : ComponentActivity() {
             }
             Box(
                 modifier = Modifier
-                    .align(alignment = BiasAlignment(0f, -0.95f))
-                    .size(50.dp, 15.dp)
-                    .clickable(
-                        indication = LocalIndication.current,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        isAquariumOn = !isAquariumOn
-                        onConfigurationActiveUpdate(isAquariumOn)
-                    }
-            )
-            Box(
-                modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .align(alignment = BiasAlignment(0f, 0.85f))
                     .background(Color(201, 201, 201))
@@ -251,6 +253,53 @@ class BetterGameScreen : ComponentActivity() {
                     modifier = Modifier.padding(6.dp, 1.dp),
                 )
             }
+        }
+    }
+
+    @Composable
+    fun EmptyAquarium(configurationWithEvent: ConfigurationWithEvent,
+                      onEnter: () -> Unit,
+                      onConfigurationActiveUpdate: (isConfigurationActive: Boolean) -> Unit){
+        var isAquariumOn by remember { mutableStateOf(configurationWithEvent.configuration.isActive) }
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            Image(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        indication = LocalIndication.current,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        onEnter()
+                    },
+                painter = rememberDrawablePainter(
+                    drawable = getDrawable(
+                        LocalContext.current,
+                        if (isAquariumOn) {
+                            R.drawable.aquarium
+                        } else {
+                            R.drawable.aquariumoff
+                        }
+                    )
+                ),
+                contentDescription = "Loading animation",
+                contentScale = ContentScale.FillWidth,
+            )
+            Box(
+                modifier = Modifier
+                    .align(alignment = BiasAlignment(0f, -0.95f))
+                    .size(50.dp, 15.dp)
+                    .clickable(
+                        indication = LocalIndication.current,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        isAquariumOn = !isAquariumOn
+                        onConfigurationActiveUpdate(isAquariumOn)
+                    }
+            )
         }
     }
 

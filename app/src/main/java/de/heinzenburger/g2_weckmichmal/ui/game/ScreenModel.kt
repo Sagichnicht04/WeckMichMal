@@ -5,8 +5,11 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import de.heinzenburger.g2_weckmichmal.core.Core
 import de.heinzenburger.g2_weckmichmal.specifications.Configuration
@@ -19,7 +22,7 @@ class ScreenModel : ViewModel(){
     private lateinit var core: CoreSpecification
     var configurations = mutableStateListOf<ConfigurationWithEvent>()
     var coins = mutableIntStateOf(0)
-
+    var openShop by mutableStateOf(false)
     fun setEditScreen(context: Context, configuration: Configuration?){
         val core = Core(context)
         val intent = Intent(context, AlarmClockEditScreen::class.java)
@@ -30,13 +33,17 @@ class ScreenModel : ViewModel(){
         (context as ComponentActivity).finish()
     }
 
-    fun loadAquariumAnimations(context: Context, color: String): List<List<Bitmap>> {
-        val result = mutableListOf<MutableList<Bitmap>>()
-        for(animation in 0 .. 7){
+    fun loadAquariumAnimations(context: Context): List<List<List<Bitmap>>> {
+        val colors = listOf("0_0","0_1","0_2","1_0","1_1","1_2","2_0","2_1","2_2","3_0","3_1","3_2")
+        val result = mutableListOf<MutableList<MutableList<Bitmap>>>()
+        colors.forEachIndexed{ colorIndex, color ->
             result.add(mutableListOf())
-            for(i in 0..3) {
-                context.assets.open("fish/$color/animation_$animation/$i.png").use { inputStream ->
-                     result[animation].add(BitmapFactory.decodeStream(inputStream))
+            for(animation in 0 .. 7){
+                result[colorIndex].add(mutableListOf())
+                for(i in 0..3) {
+                    context.assets.open("fish/color_$color/animation_$animation/$i.png").use { inputStream ->
+                         result[colorIndex][animation].add(BitmapFactory.decodeStream(inputStream))
+                    }
                 }
             }
         }
@@ -56,7 +63,7 @@ class ScreenModel : ViewModel(){
             }
         }
     }
-    private fun loadCoins() {
+    fun loadCoins() {
         thread{
             coins.intValue = core.getCoins() ?: 0
         }
