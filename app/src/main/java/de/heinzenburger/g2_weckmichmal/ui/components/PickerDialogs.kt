@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,12 +60,199 @@ import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.Num
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurText
 import de.heinzenburger.g2_weckmichmal.ui.components.BasicElements.Companion.OurTextField
 import de.heinzenburger.g2_weckmichmal.ui.theme.G2_WeckMichMalTheme
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import kotlin.concurrent.thread
 
 // PickerDialogs provides various dialog components for user input and permissions
 class PickerDialogs {
     companion object{
+
+        //Dialog that explains game mode
+        @OptIn(ExperimentalMaterial3Api::class)
+        @Composable
+        fun ExplainGameModeDialog(
+            currentMode: Boolean,
+            currentGoodWakeTimeStart: LocalTime,
+            currentGoodWakeTimeEnd: LocalTime,
+            currentLastConfigurationChanged: LocalDate,
+            onConfirm: (newMode: Boolean) -> Unit,
+            onWindowChange: (currentGoodWakeTimeStart: LocalTime, currentGoodWakeTimeEnd: LocalTime)->Unit,
+            onDismiss: () -> Unit,
+        ) {
+            val openStartTime = remember { mutableStateOf(false) }
+            val openEndTime = remember { mutableStateOf(false) }
+            val goodWakeTimeStart = remember { mutableStateOf(currentGoodWakeTimeStart) }
+            val goodWakeTimeEnd = remember { mutableStateOf(currentGoodWakeTimeEnd) }
+            val lastConfigurationChanged = remember { mutableStateOf(currentLastConfigurationChanged) }
+            Dialog(onDismissRequest = onDismiss )
+            {
+                when {
+                    openStartTime.value -> {
+                        TimePickerDialogContainer(
+                            onConfirm =
+                                { timePickerState: TimePickerState ->
+                                    goodWakeTimeStart.value = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                                    openStartTime.value = false
+                                },
+                            onDismiss = {
+                                openStartTime.value = false
+                            })
+                    }
+                    openEndTime.value -> {
+                        TimePickerDialogContainer(
+                            onConfirm =
+                                { timePickerState: TimePickerState ->
+                                    goodWakeTimeEnd.value = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                                    openEndTime.value = false
+                                },
+                            onDismiss = {
+                                openEndTime.value = false
+                            })
+                    }
+                }
+                Column(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(top = 16.dp),
+
+                ){
+                    OurText(
+                        text = "Der Spielmodus ist " + if(currentMode) "aktiviert" else "deaktiviert",
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                    )
+                    Button(
+                        modifier = Modifier.fillMaxWidth(0.75f).align(alignment = Alignment.CenterHorizontally).padding(bottom = 16.dp),
+                        enabled = true,
+                        onClick = { onConfirm(!currentMode) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        if(currentMode){
+                            OurText(text = "Spielmodus deaktivieren", color = MaterialTheme.colorScheme.primary, modifier = Modifier)
+                        }
+                        else{
+                            OurText(text = "Spielmodus aktivieren", color = MaterialTheme.colorScheme.primary, modifier = Modifier)
+                        }
+                    }
+
+                    OurText(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(8.dp),
+                        text = "Der Spielmodus unterstützt gesunde Schlafgewohnheiten, indem das Aufwachen mithilfe des Weckers der App belohnt wird. Täglich kann eine Belohnung verdient werden, vorrausgesetzt, der Wecker klingelt im gesetztem Zeitraum. Dieser kann einmal im Monat angepasst werden. Je kürzer der Zeitraum, desto größer die Belohnung."
+                    )
+
+
+                    if(lastConfigurationChanged.value.year < LocalDateTime.now().year
+                        || lastConfigurationChanged.value.month < LocalDateTime.now().month) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                        ){
+                            OurText(
+                                text = "Start des Zeitraums:",
+                                modifier = Modifier.padding(24.dp)
+                            )
+                            Button(
+                                onClick = { openStartTime.value = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                modifier = Modifier.padding(top = 8.dp)
+                            ){
+                                OurText(
+                                    text = goodWakeTimeStart.value.format(
+                                        DateTimeFormatter.ofPattern(
+                                            "HH:mm"
+                                        )
+                                    ),
+                                    color = MaterialTheme.colorScheme.background,
+                                    modifier = Modifier
+                                )
+                            }
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                        ){
+                            OurText(
+                                text = "Ende des Zeitraums:",
+                                modifier = Modifier.padding(24.dp)
+                            )
+                            Button(
+                                onClick = { openEndTime.value = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                modifier = Modifier.padding(top = 8.dp)
+                            ){
+                                OurText(
+                                    text = goodWakeTimeEnd.value.format(
+                                        DateTimeFormatter.ofPattern(
+                                            "HH:mm"
+                                        )
+                                    ),
+                                    color = MaterialTheme.colorScheme.background,
+                                    modifier = Modifier
+                                )
+                            }
+                        }
+                        if(goodWakeTimeStart.value != currentGoodWakeTimeStart || goodWakeTimeEnd.value != currentGoodWakeTimeEnd){
+                            Button(
+                                modifier = Modifier.fillMaxWidth(0.75f).align(alignment = Alignment.CenterHorizontally).padding(8.dp),
+                                enabled = true,
+                                onClick = { onWindowChange(goodWakeTimeStart.value,goodWakeTimeEnd.value) },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.onBackground
+                                ),
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                OurText(text = "Speichern", color = MaterialTheme.colorScheme.primary, modifier = Modifier)
+                            }
+                        }
+                    }
+                    else{
+                        OurText(
+                            text = "Zeitraum festgelegt auf " +
+                                    goodWakeTimeStart.value.format(
+                                DateTimeFormatter.ofPattern(
+                                        "HH:mm"
+                                        )
+                                    ) + "-" +
+                                    goodWakeTimeEnd.value.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "HH:mm"
+                                        )
+                                    ) + "\nNächste Änderung möglich am " +
+                                    LocalDate.from(lastConfigurationChanged.value).plusMonths(1).withDayOfMonth(1)
+                                    .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                            ,
+                            modifier = Modifier.padding(top = 24.dp)
+                        )
+                    }
+                    OurText(
+                        text = "Von " +
+                                goodWakeTimeStart.value.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "HH:mm"
+                                    )
+                                ) + "-" +
+                                goodWakeTimeEnd.value.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "HH:mm"
+                                    )
+                                ) +
+                                " -  " +
+                                CoreSpecification.getRewardForWindow(goodWakeTimeStart.value, goodWakeTimeEnd.value) +
+                                "x Belohnung",
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally).padding(top = 8.dp, bottom = 24.dp)
+                    )
+                }
+            }
+        }
+
+
         //Dialogs for Picking LocalTime and Minutes
         @Composable
         fun MinutePickerDialog(
@@ -618,12 +806,14 @@ class PickerDialogs {
 @Composable
 fun SettingsScreenPreview() {
     G2_WeckMichMalTheme {
-        PickerDialogs.MinutePickerDialog(
-            { minutes: Int ->
-            },
-            {
-            },
-            default = 0,
+        PickerDialogs.ExplainGameModeDialog(
+            currentMode = true,
+            currentGoodWakeTimeStart = LocalTime.of(7,0),
+            currentGoodWakeTimeEnd = LocalTime.of(8,0),
+            currentLastConfigurationChanged = LocalDate.MIN,
+            {gameMode -> },
+            {currentGoodWakeTimeStart, currentGoodWakeTimeEnd -> },
+            { },
         )
     }
 }

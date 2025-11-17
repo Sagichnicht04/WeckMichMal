@@ -109,6 +109,58 @@ interface InterfaceEventHandler {
     @Throws(PersistenceException.UpdateEventException::class)
     fun removeEvent(configID: Long)
 }
+
+interface InterfaceGamePersistency{
+
+    /**
+     * Overrides the game storage in the persistence layer
+     */
+    @Throws(PersistenceException.WriteGameException::class)
+    fun saveOrUpdateGamePersistency(gameEntity: GameEntity)
+    /**
+     * Returns the game information from the persistence layer.
+     *
+     * @return A [SettingsEntity] object.
+     */
+    @Throws(PersistenceException.ReadGameException::class)
+    fun getGameEntity(): GameEntity
+    /**
+     * A boolean that indicates whether the game file already exists
+     */
+    fun isGameNotInitialized(): Boolean
+
+    /**
+     * Update the player coins
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateCoins(coins: Int)
+    /**
+     * Update the last time that the wake up window has been modified
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateLastConfigurationChange(date: LocalDate)
+    /**
+     * Update the list of bought benefits
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity)
+    /**
+     * Update the start of the wake up window
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateGoodWakeTimeEnd(time: LocalTime)
+    /**
+     * Update the end of the wake up window
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateGoodWakeTimeStart(time: LocalTime)
+
+    /**
+     * Update the last time coin reward is received
+     */
+    @Throws(PersistenceException.UpdateGameException::class)
+    fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate)
+}
 interface InterfaceApplicationSettings {
     /**
      * Overrides the application settings in the persistence layer with the given parameter.
@@ -143,6 +195,11 @@ interface InterfaceApplicationSettings {
      * Update course url in the database
      */
     fun updateCourseURL(url: String)
+
+    /**
+     * Update game mode in the database
+     */
+    fun updateIsGameMode(isGameMode: Boolean)
 }
 
 /**
@@ -293,7 +350,8 @@ data class SettingsEntity(
     /** The WebLink leading to the RAPLA schedule. */
     var raplaURL: String? = "",
     var defaultValues: DefaultAlarmValues = DefaultAlarmValues(),
-    var excludeCourses: List<String> = mutableListOf<String>()
+    var excludeCourses: List<String> = mutableListOf<String>(),
+    var isGameMode: Boolean = false
 ){
     @Parcelize
     data class DefaultAlarmValues(
@@ -316,8 +374,80 @@ data class SettingsEntity(
     }
 }
 
+/**
+ * All persistent information about the game
+ */
+data class GameEntity(
+    var coins: Int = 0,
+    private var lastConfigurationChange: String = LocalDate.of(1990,1,1)
+        .format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+    private var lastTimeCoinsReceived: String = LocalDate.of(1990,1,1)
+        .format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+    private var goodWakeTimeStart: String = LocalTime.of(7,0).format(
+        DateTimeFormatter.ofPattern(
+            "HH:mm"
+        )
+    ),
+    private var goodWakeTimeEnd: String = LocalTime.of(8, 0).format(
+            DateTimeFormatter.ofPattern(
+                "HH:mm"
+            )
+        ),
+    var shoppingList: ShoppingEntity = ShoppingEntity()
+){
+    fun setLastConfigurationChange(lastConfigurationChange: LocalDate){
+        this.lastConfigurationChange = lastConfigurationChange.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    }
+    fun getLastConfigurationChange(): LocalDate{
+        return LocalDate.parse(this.lastConfigurationChange, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    }
+    fun setLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate){
+        this.lastTimeCoinsReceived = lastTimeCoinsReceived.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    }
+    fun getLastTimeCoinsReceived(): LocalDate{
+        return LocalDate.parse(this.lastTimeCoinsReceived, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    }
+    fun setGoodWakeTimeStart(goodWakeTimeStart: LocalTime){
+        this.goodWakeTimeStart = goodWakeTimeStart.format(DateTimeFormatter.ofPattern("HH:mm"))
+    }
+    fun getGoodWakeTimeStart(): LocalTime{
+        return LocalTime.parse(this.goodWakeTimeStart, DateTimeFormatter.ofPattern("HH:mm"))
+    }
+    fun setGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime){
+        this.goodWakeTimeEnd = goodWakeTimeEnd.format(DateTimeFormatter.ofPattern("HH:mm"))
+    }
+    fun getGoodWakeTimeEnd(): LocalTime{
+        return LocalTime.parse(this.goodWakeTimeEnd, DateTimeFormatter.ofPattern("HH:mm"))
+    }
+    data class ShoppingEntity(
+        var boughtFish: MutableList<Fish> = mutableListOf()
+    ){
+        data class Fish(
+            var color: Int,
+        ){
+            companion object{
+                const val PRICE = 3
+            }
+        }
+    }
+}
+
 sealed class PersistenceException(message: String?, cause: Exception?) :
     Exception(message, cause) {
+    /**
+     * Thrown when updating settings.json fails
+     */
+    class UpdateGameException(cause: Exception?): PersistenceException("Error updating game file", cause)
+
+    /**
+     * Thrown when writing to settings.json fails
+     */
+    class WriteGameException(cause: Exception?): PersistenceException("Error writing information to game file", cause)
+
+    /**
+     * Thrown when writing to settings.json fails
+     */
+    class ReadGameException(cause: Exception?): PersistenceException("Error reading information from game file", cause)
 
     /**
      * Thrown when updating settings.json fails

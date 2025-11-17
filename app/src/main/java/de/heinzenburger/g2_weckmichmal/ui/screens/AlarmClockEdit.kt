@@ -840,7 +840,7 @@ class AlarmClockEditScreen : ComponentActivity() {
     // Entry point composable for the screen, includes navigation bar
     @Composable
     fun EditComposable(modifier: Modifier, core: CoreSpecification) {
-        NavBar.Companion.NavigationBar(modifier, core, innerEditComposable, caller = AlarmClockEditScreen::class)
+        NavBar.Companion.NavigationBar(core, innerEditComposable, caller = AlarmClockEditScreen::class)
     }
 
     // Preview for Compose UI in Android Studio

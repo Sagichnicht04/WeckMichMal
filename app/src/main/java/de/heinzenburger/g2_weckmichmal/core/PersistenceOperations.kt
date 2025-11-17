@@ -20,6 +20,8 @@ import java.time.LocalDateTime
 class PersistenceOperations(
     val core: Core
 ){
+
+
     fun saveRaplaURL(urlString : String){
         if(urlString == "" || core.isValidCourseURL(urlString)){
             val applicationSettingsHandler = ApplicationSettingsHandler(core.context)
@@ -112,7 +114,7 @@ class PersistenceOperations(
     }
 
     fun getWakeUpCalculator(): WakeUpCalculator {
-        var url = getRaplaURL()
+        val url = getRaplaURL()
         return WakeUpCalculator(
             routePlanner = DBRoutePlanner(),
             courseFetcher = RaplaFetcher(

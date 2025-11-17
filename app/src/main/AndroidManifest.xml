@@ -64,6 +64,11 @@
             android:theme="@style/Theme.G2_WeckMichMal">
         </activity>
         <activity
+            android:name=".ui.game.BetterGameScreen"
+            android:exported="true"
+            android:theme="@style/Theme.G2_WeckMichMal">
+        </activity>
+        <activity
             android:name=".ui.screens.LogScreen"
             android:exported="true"
             android:theme="@style/Theme.G2_WeckMichMal">

@@ -6,6 +6,7 @@ import de.heinzenburger.g2_weckmichmal.specifications.Configuration
 import de.heinzenburger.g2_weckmichmal.specifications.Course
 import de.heinzenburger.g2_weckmichmal.specifications.Event
 import de.heinzenburger.g2_weckmichmal.specifications.CoreSpecification
+import de.heinzenburger.g2_weckmichmal.specifications.GameEntity
 import de.heinzenburger.g2_weckmichmal.specifications.MealType
 import de.heinzenburger.g2_weckmichmal.specifications.MensaMeal
 import de.heinzenburger.g2_weckmichmal.specifications.Route
@@ -62,7 +63,7 @@ class MockupCore : CoreSpecification {
         val mockupEvents = listOf(
             Event(
                 configID = 123,
-                wakeUpTime = LocalTime.of(8,30),
+                wakeUpTime = LocalTime.of(8,45),
                 days = setOf(DayOfWeek.MONDAY, DayOfWeek.THURSDAY),
                 date = LocalDate.of(2024,10,1),
                 courses = listOf(
@@ -147,6 +148,12 @@ class MockupCore : CoreSpecification {
 
     override fun runUpdateLogic() {}
     override fun saveRaplaURL(url : String){}
+    override fun updateIsGameMode(isGameMode: Boolean) {}
+
+    override fun getIsGameMode(): Boolean? {
+        return null
+    }
+
     override fun saveRaplaURL(director: String, course: String) {
 
     }
@@ -254,5 +261,54 @@ class MockupCore : CoreSpecification {
     }
 
     override fun logNextAlarm(date: LocalDateTime, type: String) {
+    }
+
+    override fun getCoins(): Int? {
+        return null
+    }
+
+    override fun updateCoins(coins: Int) {
+    }
+
+    override fun getLastConfigurationChanged(): LocalDate? {
+        return null
+    }
+
+    override fun updateLastConfiguratoinChanged(lastConfigurationChanged: LocalDate) {
+    }
+
+    override fun getGoodWakeTimeStart(): LocalTime? {
+        return null
+    }
+
+    override fun updateGoodWakeTimeStart(goodWakeTimeStart: LocalTime) {
+    }
+
+    override fun getGoodWakeTimeEnd(): LocalTime? {
+        return null
+    }
+
+    override fun updateGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime) {
+    }
+
+    override fun getShoppingList(): GameEntity.ShoppingEntity? {
+        return null
+    }
+
+    override fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity) {
+    }
+
+    override fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate) {
+
+    }
+
+    override fun getLastTimeCoinsReceived(): LocalDate? {
+        return null
+    }
+
+    override fun gameEventAlarmRinging() {
+    }
+
+    override fun buyFish(color: Int) {
     }
 }

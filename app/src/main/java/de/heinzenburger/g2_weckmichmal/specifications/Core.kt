@@ -1,9 +1,11 @@
 package de.heinzenburger.g2_weckmichmal.specifications
 
+import de.heinzenburger.g2_weckmichmal.game.CoinManager
 import de.heinzenburger.g2_weckmichmal.persistence.Logger
 import de.heinzenburger.g2_weckmichmal.specifications.SettingsEntity.DefaultAlarmValues
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 /**
  * Interface defining the core
@@ -30,6 +32,17 @@ interface CoreSpecification {
      * @param url RAPLA URL to be saved in the settings database
      */
     fun saveRaplaURL(url : String)
+
+    /**
+     * Update the isGameMode parameter in the settings database
+     * @param isGameMode Variable that toggles Application Game Mode
+     */
+    fun updateIsGameMode(isGameMode : Boolean)
+
+    /**
+     * Get the isGameMode from the settings database
+     */
+    fun getIsGameMode(): Boolean?
 
     /**
      * Save the rapla URL to the settings database
@@ -149,4 +162,26 @@ interface CoreSpecification {
     fun getLoggedNextAlarm() : String
 
     fun logNextAlarm(date: LocalDateTime, type: String)
+    fun getCoins(): Int?
+    fun updateCoins(coins: Int)
+    fun getLastConfigurationChanged(): LocalDate?
+    fun updateLastConfiguratoinChanged(lastConfigurationChanged: LocalDate)
+    fun getGoodWakeTimeStart(): LocalTime?
+    fun updateGoodWakeTimeStart(goodWakeTimeStart: LocalTime)
+    fun getGoodWakeTimeEnd(): LocalTime?
+    fun updateGoodWakeTimeEnd(goodWakeTimeEnd: LocalTime)
+    fun getShoppingList(): GameEntity.ShoppingEntity?
+    fun updateShoppingList(shoppingEntity: GameEntity.ShoppingEntity)
+    fun updateLastTimeCoinsReceived(lastTimeCoinsReceived: LocalDate)
+    fun getLastTimeCoinsReceived(): LocalDate?
+    fun gameEventAlarmRinging()
+
+    fun buyFish(color: Int)
+
+    companion object{
+        fun getRewardForWindow(startTime: LocalTime, endTime: LocalTime): Int{
+            return CoinManager.getRewardForWindow(startTime, endTime)
+        }
+    }
+
 }

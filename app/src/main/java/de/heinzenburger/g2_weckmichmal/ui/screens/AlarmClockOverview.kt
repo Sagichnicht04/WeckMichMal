@@ -32,6 +32,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,14 +61,13 @@ import kotlin.concurrent.thread
 
 // Main screen activity for displaying and managing alarm clock configurations
 class AlarmClockOverviewScreen : ComponentActivity(){
-    companion object{
-        var aPlatypus = false //Static variable to set Platypus mode
-    }
     private lateinit var core: CoreSpecification
     private var openLoadingScreen = mutableStateOf(false)
     private var configurationAndEventEntities = mutableStateOf(emptyList<ConfigurationWithEvent>())
     private lateinit var context : Context
 
+    private var aPlatypus = true //Variable to set Platypus mode
+    private var coins = mutableIntStateOf(5000)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +79,8 @@ class AlarmClockOverviewScreen : ComponentActivity(){
             //Background loading of alarm configurations
             thread {
                 configurationAndEventEntities.value = core.getAllConfigurationAndEvent()!!
+                aPlatypus = core.getIsGameMode() == true
+                coins.intValue = core.getCoins() ?: 0
             }
 
             setContent {
@@ -263,7 +265,23 @@ class AlarmClockOverviewScreen : ComponentActivity(){
                         lineTo(0f, size.height*0.9f)
                         lineTo(size.width*0.3f, size.height*0.9f)
                     })
-                    .background(color = Color(66, 48, 11))
+                    .background(color =
+                        if(coins.intValue > 1000){
+                            Color(55, 34, 87)
+                        }
+                        else if(coins.intValue > 500 ){
+                            Color(66, 156, 119)
+                        }
+                        else if(coins.intValue > 100 ){
+                            Color(231, 199, 81)
+                        }
+                        else if(coins.intValue > 20){
+                            Color(182, 183, 188)
+                        }
+                        else{
+                            Color(66, 48, 11)
+                        }
+                    )
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -408,7 +426,8 @@ class AlarmClockOverviewScreen : ComponentActivity(){
     // Entry point composable for the screen, wrapped with navigation bar
     @Composable
     fun AlarmClockOverviewComposable(modifier: Modifier, core: CoreSpecification) {
-        NavBar.Companion.NavigationBar(modifier, core, innerAlarmClockOverviewComposable,
+        NavBar.Companion.NavigationBar(
+            core, innerAlarmClockOverviewComposable,
             AlarmClockOverviewScreen::class)
     }
 

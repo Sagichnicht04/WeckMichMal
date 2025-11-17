@@ -15,7 +15,7 @@ data class ApplicationSettingsHandler (
 
     override fun saveOrUpdateApplicationSettings(settings: SettingsEntity) {
         try {
-            var json = gson.toJson(settings)
+            val json = gson.toJson(settings)
             //context.filesDir is the apps personal data folder
             logger.log(Logger.Level.SEVERE, json.toString())
             File(context.filesDir, "settings.json").writeText(json.toString())
@@ -69,6 +69,17 @@ data class ApplicationSettingsHandler (
         try {
             val settings = getApplicationSettings()
             settings.raplaURL = url
+            saveOrUpdateApplicationSettings(settings)
+        }
+        catch (e: PersistenceException){
+            throw PersistenceException.UpdateSettingsException(e)
+        }
+    }
+
+    override fun updateIsGameMode(isGameMode: Boolean) {
+        try {
+            val settings = getApplicationSettings()
+            settings.isGameMode = isGameMode
             saveOrUpdateApplicationSettings(settings)
         }
         catch (e: PersistenceException){
