@@ -15,8 +15,8 @@ android {
         applicationId = "de.heinzenburger.g2_weckmichmal"
         minSdk = 31
         targetSdk = 36
-        versionCode = 16
-        versionName = "2.3"
+        versionCode = 17
+        versionName = "2.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,10 +53,9 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.testing)
+    androidTestImplementation(libs.androidx.compose.testing)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
