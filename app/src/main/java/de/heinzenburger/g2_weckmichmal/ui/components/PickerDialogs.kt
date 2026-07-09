@@ -127,7 +127,7 @@ class PickerDialogs {
                         enabled = true,
                         onClick = { onConfirm(!currentMode) },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onBackground
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
                         ),
                         contentPadding = PaddingValues(0.dp)
                     ) {
@@ -474,12 +474,12 @@ class PickerDialogs {
                 text = { TimePicker(
                     state = timePickerState,
                     colors = TimePickerDefaults.colors(
-                        clockDialColor = MaterialTheme.colorScheme.onBackground,
-                        selectorColor = MaterialTheme.colorScheme.secondary,
+                        clockDialColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectorColor = MaterialTheme.colorScheme.onBackground,
                         clockDialUnselectedContentColor = MaterialTheme.colorScheme.primary,
                         clockDialSelectedContentColor = MaterialTheme.colorScheme.primary,
-                        timeSelectorSelectedContainerColor = MaterialTheme.colorScheme.onBackground,
-                        timeSelectorUnselectedContainerColor = MaterialTheme.colorScheme.onBackground,
+                        timeSelectorSelectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        timeSelectorUnselectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         timeSelectorSelectedContentColor = MaterialTheme.colorScheme.primary,
                         timeSelectorUnselectedContentColor = MaterialTheme.colorScheme.primary,
                     ),

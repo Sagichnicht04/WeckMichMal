@@ -147,7 +147,7 @@ class BetterGameScreen : ComponentActivity() {
                 Icon(
                     Icons.Filled.Shop,
                     contentDescription = "Game Icon",
-                    tint = MaterialTheme.colorScheme.secondary,
+                    tint = MaterialTheme.colorScheme.primaryContainer,
                     modifier = Modifier
                         .align(BiasAlignment(1f,0f))
                         .size(48.dp)
@@ -168,27 +168,6 @@ class BetterGameScreen : ComponentActivity() {
                     onEnter = {viewModel.setEditScreen(context, configurationWithEvent.configuration)},
                     onConfigurationActiveUpdate = {isConfigurationActive -> viewModel.updateConfigurationActive(isConfigurationActive, configurationWithEvent.configuration)}
                 )
-            }
-
-            Button(
-                onClick = {
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.primary,
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                ),
-                contentPadding = PaddingValues(0.dp),
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .size(69.dp)
-                    .align(alignment = Alignment.CenterHorizontally)
-                    .border(
-                        2.dp, Color.Transparent,
-                        RoundedCornerShape(50)
-                    )
-
-            ) {
-                Text(text = "+", style = MaterialTheme.typography.bodyLarge)
             }
         }
     }

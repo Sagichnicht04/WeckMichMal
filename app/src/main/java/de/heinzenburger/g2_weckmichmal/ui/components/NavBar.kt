@@ -45,7 +45,7 @@ class NavBar : ComponentActivity() {
         fun <T> NavigationBar(core: CoreSpecification, callback: @Composable ((PaddingValues, CoreSpecification) -> Unit), caller : T) {
             val iconSize = 35.dp
             val iconColor = MaterialTheme.colorScheme.primary
-            val iconSelectedColor = MaterialTheme.colorScheme.secondary
+            val iconSelectedColor = MaterialTheme.colorScheme.primaryContainer
             val context = LocalContext.current
 
             Scaffold(

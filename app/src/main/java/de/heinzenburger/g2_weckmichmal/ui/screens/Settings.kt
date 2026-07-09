@@ -207,7 +207,7 @@ class SettingsScreen : ComponentActivity() {
                     },
                     modifier = Modifier.padding(bottom = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onBackground
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 ) {
                     OurText(
@@ -253,7 +253,7 @@ class SettingsScreen : ComponentActivity() {
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onBackground
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
                         ),
                         modifier = Modifier.padding(top = 16.dp)
                     ) {

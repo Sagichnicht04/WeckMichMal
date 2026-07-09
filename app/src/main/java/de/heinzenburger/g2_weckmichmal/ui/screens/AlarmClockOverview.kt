@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -66,7 +67,7 @@ class AlarmClockOverviewScreen : ComponentActivity(){
     private var configurationAndEventEntities = mutableStateOf(emptyList<ConfigurationWithEvent>())
     private lateinit var context : Context
 
-    private var aPlatypus = true //Variable to set Platypus mode
+    private var aPlatypus = false //Variable to set Platypus mode
     private var coins = mutableIntStateOf(5000)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,78 +139,79 @@ class AlarmClockOverviewScreen : ComponentActivity(){
     private fun InnerSingleAlarmConfiguration(properties: ConfigurationWithEvent) {
         var userActivated by remember { mutableStateOf(properties.configuration.isActive) }
 
-        Column(
-            Modifier
-                .padding(0.dp, 16.dp)
-                .clip(RoundedCornerShape(15))
-                .background(MaterialTheme.colorScheme.onBackground)
-                .fillMaxWidth(0.8f)
-        ){
-            Row(
-                Modifier
-                    .padding()
-                    .background(Color.Transparent)
-                    .fillMaxWidth(1f)
-            ) {
-                Switch(
-                    checked = userActivated,
-                    //Configuration will always be reset to active when edited in AlarmClockEdit
-                    onCheckedChange = {
-                        userActivated = it
-                        thread {
-                            core.updateConfigurationActive(userActivated, properties.configuration)
-                            core.runUpdateLogic()
+            Box {
+                Column(
+                    Modifier
+                        .padding(0.dp, 16.dp)
+                        .clip(RoundedCornerShape(15))
+                        .background(MaterialTheme.colorScheme.onBackground)
+                        .fillMaxWidth(0.8f)
+                ) {
+                    Row(
+                        Modifier
+                            .background(Color.Transparent)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(0.5f)
+                        ) {
+                            Text(
+                                text = properties.event?.wakeUpTime?.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "HH:mm"
+                                    )
+                                ) ?: "--:--",
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier
+                                    .padding(16.dp, 16.dp, 16.dp, 3.dp)
+                                    .fillMaxWidth(1f),
+                                textAlign = TextAlign.Left,
+
+                                )
+                            var days = ""
+                            properties.configuration.days.forEach {
+                                days += it.name[0] + "" + it.name[1].lowercase() + " "
+                            }
+                            Text(
+                                text = "${properties.configuration.name}, $days",
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier
+                                    .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                                    .fillMaxWidth(1f),
+                                textAlign = TextAlign.Left
+                            )
                         }
-                    },
-                    enabled = true,
-                    colors = SwitchDefaults.colors(
-                        checkedBorderColor = MaterialTheme.colorScheme.background,
-                        uncheckedBorderColor = MaterialTheme.colorScheme.background,
-                        checkedIconColor = MaterialTheme.colorScheme.primary,
-                        uncheckedIconColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.padding(10.dp, 10.dp, 0.dp, 0.dp)
-                )
-                OurText(
-                    text = properties.configuration.name,
-                    modifier = Modifier.padding(16.dp, 24.dp, 0.dp, 0.dp)
-                )
-            }
-            Row(
-                Modifier
-                    .background(Color.Transparent)
-                    .fillMaxWidth(1f)
-            ) {
-                Row(
-                    modifier = Modifier.padding(2.dp, 0.dp),
-                ){
-                    properties.configuration.days.forEach {
-                        OurText(
-                            text = it.name[0] +""+ it.name[1].lowercase(),
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(5.dp, 0.dp, 0.dp, 3.dp),
-                        )
+                        Column(
+                            modifier = Modifier.fillMaxWidth(1f),
+                        ) {
+                            Switch(
+                                checked = userActivated,
+                                //Configuration will always be reset to active when edited in AlarmClockEdit
+                                onCheckedChange = {
+                                    userActivated = it
+                                    thread {
+                                        core.updateConfigurationActive(
+                                            userActivated,
+                                            properties.configuration
+                                        )
+                                        core.runUpdateLogic()
+                                    }
+                                },
+                                enabled = true,
+                                colors = SwitchDefaults.colors(
+                                    checkedBorderColor = MaterialTheme.colorScheme.background,
+                                    uncheckedBorderColor = MaterialTheme.colorScheme.background,
+                                    checkedIconColor = MaterialTheme.colorScheme.primary,
+                                    uncheckedIconColor = MaterialTheme.colorScheme.error
+                                ),
+                                modifier = Modifier
+                                    .padding(10.dp, 20.dp, 10.dp, 10.dp).align(Alignment.End)
+                            )
+                        }
                     }
                 }
-
-                Button(
-                    modifier = Modifier,
-                    onClick = {
-                        setRingingScreen(context, properties)
-                    },
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    )
-                ) {
-                    OurText(
-                        text = "Geplant um: ${properties.event?.wakeUpTime?.format(DateTimeFormatter.ofPattern("HH:mm"))} \uD83D\uDCC4",
-                        textAlign = TextAlign.Right,
-                        modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 3.dp).fillMaxWidth(1f)
-                    )
-                }
             }
-        }
     }
 
     //UI Arrangement for Components when Platypus mode is off
@@ -225,19 +227,18 @@ class AlarmClockOverviewScreen : ComponentActivity(){
                 },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.background,
-                    containerColor = MaterialTheme.colorScheme.secondary,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
                 ),
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier
                     .border(2.dp, Color.Transparent,
                         RoundedCornerShape(50))
                     .size(40.dp)
-
             ){
                 Text(
                     text = "⨯",
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.background,
+                    color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -256,31 +257,28 @@ class AlarmClockOverviewScreen : ComponentActivity(){
                     .zIndex(2f)
                     .size(50.dp)
                     .clip(GenericShape { size, _ ->
-                        moveTo(size.width*0.3f, size.height*0.5f)
-                        lineTo(size.width*0.7f, size.height*0.5f)
-                        lineTo(size.width*0.7f, size.height*0.9f)
-                        lineTo(size.width, size.height*0.9f)
+                        moveTo(size.width * 0.3f, size.height * 0.5f)
+                        lineTo(size.width * 0.7f, size.height * 0.5f)
+                        lineTo(size.width * 0.7f, size.height * 0.9f)
+                        lineTo(size.width, size.height * 0.9f)
                         lineTo(size.width, size.height)
                         lineTo(0f, size.height)
-                        lineTo(0f, size.height*0.9f)
-                        lineTo(size.width*0.3f, size.height*0.9f)
+                        lineTo(0f, size.height * 0.9f)
+                        lineTo(size.width * 0.3f, size.height * 0.9f)
                     })
-                    .background(color =
-                        if(coins.intValue > 1000){
-                            Color(55, 34, 87)
-                        }
-                        else if(coins.intValue > 500 ){
-                            Color(66, 156, 119)
-                        }
-                        else if(coins.intValue > 100 ){
-                            Color(231, 199, 81)
-                        }
-                        else if(coins.intValue > 20){
-                            Color(182, 183, 188)
-                        }
-                        else{
-                            Color(66, 48, 11)
-                        }
+                    .background(
+                        color =
+                            if (coins.intValue > 1000) {
+                                Color(55, 34, 87)
+                            } else if (coins.intValue > 500) {
+                                Color(66, 156, 119)
+                            } else if (coins.intValue > 100) {
+                                Color(231, 199, 81)
+                            } else if (coins.intValue > 20) {
+                                Color(182, 183, 188)
+                            } else {
+                                Color(66, 48, 11)
+                            }
                     )
             )
             Row(
@@ -298,8 +296,10 @@ class AlarmClockOverviewScreen : ComponentActivity(){
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier
                         .zIndex(1f)
-                        .border(2.dp, Color.Transparent,
-                            RoundedCornerShape(50))
+                        .border(
+                            2.dp, Color.Transparent,
+                            RoundedCornerShape(50)
+                        )
 
                 ){
                     Text(
@@ -321,7 +321,7 @@ class AlarmClockOverviewScreen : ComponentActivity(){
                     modifier = Modifier
                         .zIndex(-1f)
                         .size(50.dp, 40.dp)
-                        .padding(0.dp,20.dp,0.dp,0.dp)
+                        .padding(0.dp, 20.dp, 0.dp, 0.dp)
                 ){
 
                 }
@@ -333,19 +333,19 @@ class AlarmClockOverviewScreen : ComponentActivity(){
                     .width(200.dp)
                     .height(30.dp)
                     .clip(GenericShape { size, _ ->
-                        moveTo(size.width*0.17f, 0f)
-                        lineTo(size.width*0.17f, size.height)
-                        lineTo(size.width*0.05f, size.height)
-                        lineTo(size.width*0.05f, size.height*0.9f)
-                        lineTo(size.width*0.13f, size.height*0.9f)
-                        lineTo(size.width*0.13f, size.height*0f)
+                        moveTo(size.width * 0.17f, 0f)
+                        lineTo(size.width * 0.17f, size.height)
+                        lineTo(size.width * 0.05f, size.height)
+                        lineTo(size.width * 0.05f, size.height * 0.9f)
+                        lineTo(size.width * 0.13f, size.height * 0.9f)
+                        lineTo(size.width * 0.13f, size.height * 0f)
 
-                        moveTo(size.width*0.87f, 0f)
-                        lineTo(size.width*0.87f, size.height)
-                        lineTo(size.width*0.75f, size.height)
-                        lineTo(size.width*0.75f, size.height*0.9f)
-                        lineTo(size.width*0.83f, size.height*0.9f)
-                        lineTo(size.width*0.83f, size.height*0f)
+                        moveTo(size.width * 0.87f, 0f)
+                        lineTo(size.width * 0.87f, size.height)
+                        lineTo(size.width * 0.75f, size.height)
+                        lineTo(size.width * 0.75f, size.height * 0.9f)
+                        lineTo(size.width * 0.83f, size.height * 0.9f)
+                        lineTo(size.width * 0.83f, size.height * 0f)
                     })
                     .background(color = Color(251, 176, 51))
             )
@@ -389,14 +389,12 @@ class AlarmClockOverviewScreen : ComponentActivity(){
                             contentPadding = PaddingValues(0.dp),
                             shape = RoundedCornerShape(0.dp)
                         ){
-                            if (aPlatypus) {
+                            if (false && aPlatypus) {
                                 APlatypus(
                                     configurationAndEvent
                                 )
                             } else {
-                                SingleAlarmConfiguration(
-                                    configurationAndEvent
-                                )
+                                SingleAlarmConfiguration(configurationAndEvent)
                             }
                         }
                     }
@@ -406,13 +404,15 @@ class AlarmClockOverviewScreen : ComponentActivity(){
                         },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                            containerColor = MaterialTheme.colorScheme.secondary,
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
                         ),
                         contentPadding = PaddingValues(0.dp),
                         modifier = Modifier
                             .size(69.dp)
-                            .border(2.dp, Color.Transparent,
-                                RoundedCornerShape(50))
+                            .border(
+                                2.dp, Color.Transparent,
+                                RoundedCornerShape(50)
+                            )
 
                     ) {
                         Text(text = "+", style = MaterialTheme.typography.bodyLarge)

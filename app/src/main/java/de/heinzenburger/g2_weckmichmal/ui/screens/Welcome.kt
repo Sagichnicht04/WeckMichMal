@@ -87,7 +87,7 @@ class WelcomeScreen : ComponentActivity() {
                 style = MaterialTheme.typography.titleMedium,
                 text = "Willkommen",
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 modifier = modifier.padding(16.dp)
             )
             Text(

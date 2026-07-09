@@ -15,8 +15,8 @@ android {
         applicationId = "de.heinzenburger.g2_weckmichmal"
         minSdk = 31
         targetSdk = 36
-        versionCode = 17
-        versionName = "2.4"
+        versionCode = 18
+        versionName = "2.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

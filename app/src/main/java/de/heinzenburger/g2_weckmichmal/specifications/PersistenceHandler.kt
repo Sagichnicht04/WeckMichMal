@@ -378,7 +378,7 @@ data class SettingsEntity(
  * All persistent information about the game
  */
 data class GameEntity(
-    var coins: Int = 0,
+    var coins: Int = 12,
     private var lastConfigurationChange: String = LocalDate.of(1990,1,1)
         .format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
     private var lastTimeCoinsReceived: String = LocalDate.of(1990,1,1)

@@ -72,7 +72,7 @@ class SaveURL {
             },
             colors = ButtonColors(
                 contentColor = MaterialTheme.colorScheme.primary,
-                containerColor = MaterialTheme.colorScheme.onBackground,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.error,
                 disabledContentColor = MaterialTheme.colorScheme.error
             ),

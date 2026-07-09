@@ -81,7 +81,7 @@ class InformationScreen : ComponentActivity() {
                 Button(
                     modifier = Modifier.align(BiasAlignment.Horizontal(0f)).padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     ),
                     onClick = {
                         openCoursesInBrowser()
@@ -93,7 +93,7 @@ class InformationScreen : ComponentActivity() {
                 Button(
                     modifier = Modifier.align(BiasAlignment.Horizontal(0f)).padding(top = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     ),
                     onClick = {
                         openMensaInBrowser()
@@ -136,7 +136,7 @@ class InformationScreen : ComponentActivity() {
                 style = MaterialTheme.typography.titleSmall,
                 text = "Mensa Essensplan",
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 modifier = Modifier.padding(10.dp).align(BiasAlignment.Horizontal(0f))
             )
             Column {
@@ -144,10 +144,12 @@ class InformationScreen : ComponentActivity() {
                     Row(horizontalArrangement = Arrangement.SpaceBetween) {
                         OurText(
                             text = meal.name,
+                            color = MaterialTheme.colorScheme.primaryContainer,
                             textAlign = TextAlign.Left,
                             modifier = Modifier.padding(16.dp).fillMaxWidth(0.65f),
                         )
                         OurText(
+                            color = MaterialTheme.colorScheme.primaryContainer,
                             text =
                                 if(meal.price > 0){
                                     String.format("%.2f €", meal.price)

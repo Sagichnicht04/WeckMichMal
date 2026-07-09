@@ -186,25 +186,6 @@ class GameScreen : ComponentActivity() {
             configurationWithEvents.value?.forEachIndexed { index, configurationWithEvent ->
                 Aquarium(configurationWithEvent, core , index)
             }
-
-            Button(
-                onClick = {
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.primary,
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                ),
-                contentPadding = PaddingValues(0.dp),
-                modifier = Modifier
-                    .padding(top=16.dp)
-                    .size(69.dp)
-                    .align(alignment = Alignment.CenterHorizontally)
-                    .border(2.dp, Color.Transparent,
-                        RoundedCornerShape(50))
-
-            ) {
-                Text(text = "+", style = MaterialTheme.typography.bodyLarge)
-            }
         }
     }
 
